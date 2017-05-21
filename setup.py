@@ -13,7 +13,7 @@ with open('requirements.txt') as f:
 setup(
     name='IPToCC',
     version=VERSION,
-    packages=['iptocc', 'iptocc.models'],
+    packages=['iptocc'],
     url='https://github.com/Code-ReaQtor/IPToCC',
     download_url='https://github.com/Code-ReaQtor/IPToCC/tarball/{}'.format(VERSION),
     license='MIT',
