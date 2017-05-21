@@ -17,13 +17,16 @@ __status__ = "Production"
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 database = unqlite.UnQLite(os.path.join(dir_path, 'rir_statistics_exchange.db'))
-ipv4_all = database.collection('ipv4').all()
-ipv6_all = database.collection('ipv6').all()
+
+
+@lru_cache(maxsize=2)
+def get_collection(type_):
+    return database.collection(type_).all()
 
 
 @lru_cache(maxsize=100000)
 def ipv4_get_country_code(ip_address):
-    for record in ipv4_all:
+    for record in get_collection('ipv4'):
         start_address = ipaddress.IPv4Address(record.get('start'))
         if start_address <= ip_address < start_address + record.get('value'):
             return record.get('country_code')
@@ -32,7 +35,7 @@ def ipv4_get_country_code(ip_address):
 
 @lru_cache(maxsize=100000)
 def ipv6_get_country_code(ip_address):
-    for record in ipv6_all:
+    for record in get_collection('ipv6'):
         network = ipaddress.IPv6Network('{}/{}'.format(record.get('start'), record.get('value')))
         if ip_address in network:
             return record.get('country_code')

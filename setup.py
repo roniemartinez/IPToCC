@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import ssl
-from distutils.core import setup
+from setuptools import setup
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -29,5 +29,6 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     install_requires=REQUIREMENTS,
+    setup_requires=['Cython==0.25.2'],
     package_data={'iptocc': ['rir_statistics_exchange.db']}
 )
