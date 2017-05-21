@@ -1,12 +1,15 @@
 # IPToCC
 
-Get country code of IPv4/IPv6 address. Address lookup is done offline.
+Get ISO country code of IPv4/IPv6 address. Address lookup is done offline.
 
 - No external API call.
 - No paid GeoIP service.
 
 Read [The Free and Simple Way To Know Who Visits Your Site](roniemartinez.space/blog/the_free_and_simple_way_to_know_who_visits_your_site)
 
+# Features
+
+- Thread-safe
 
 # Install
 
@@ -23,7 +26,7 @@ country_code = iptocc.get_country_code('<IPv4/IPv6 address>')
 
 # Sources
 
-- ftp://ftp.afrinic.net/stats/afrinic/delegated-afrinic-latest
+- ftp://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest
 - ftp://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest
 - ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest
 - ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest
@@ -32,7 +35,8 @@ country_code = iptocc.get_country_code('<IPv4/IPv6 address>')
 
 # Libraries Used
 
-- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [Cython](http://cython.org/)
+- [unqlite-python](https://github.com/coleifer/unqlite-python)
 
 
 # References

@@ -2,9 +2,6 @@
 import csv
 import hashlib
 import os
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import urllib.request
 
 import iptocc
@@ -24,16 +21,9 @@ def download_progress(count, block_size, total_size):
 
 
 if __name__ == '__main__':
-    dir_path = os.path.dirname(iptocc.__file__)
-    engine = create_engine("sqlite:///{}".format(os.path.join(dir_path, 'rir_statistics_exchange.db')))
-    iptocc.Base.metadata.drop_all(engine)
-    iptocc.Base.metadata.create_all(engine)
-
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
     for url in (
-        'ftp://ftp.afrinic.net/stats/afrinic/delegated-afrinic-latest',
+        'ftp://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest',
         'ftp://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest',
         'ftp://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest',
         'ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest',
@@ -60,14 +50,19 @@ if __name__ == '__main__':
             for row in record_reader:
                 if row[0] in ('ripencc', 'lacnic', 'arin', 'apnic', 'afrinic') \
                         and row[-1] != 'summary' \
-                        and row[6] in ('allocated', 'assigned'):
-                    record = iptocc.Record()
-                    record.country_code = row[1]
-                    record.type = row[2]
-                    record.start = row[3]
-                    record.value = int(row[4])
-                    records.append(record)
-            session.bulk_save_objects(records)
-            session.commit()
-
-
+                        and row[6] in ('allocated', 'assigned')\
+                        and row[2] in ('ipv4', 'ipv6'):
+                    country_code = row[1]
+                    type_ = row[2]
+                    start = row[3]
+                    value = int(row[4])
+                    collection = iptocc.database.collection(type_)
+                    if not collection.exists():
+                        collection.create()
+                    collection.store({
+                        'country_code': country_code,
+                        'type': type_,
+                        'start': start,
+                        'value': value
+                    })
+            iptocc.database.commit()
