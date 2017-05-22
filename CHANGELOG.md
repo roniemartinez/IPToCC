@@ -4,6 +4,10 @@ Changes to IPToCC.
 
 ## [Unreleased]
 
+## [v1.0.8]
+### Fixed
+- Missing packages in requirements.txt.
+
 ## [v1.0.7]
 ### Changed
 - Changed from distutils.core to setuptools.
