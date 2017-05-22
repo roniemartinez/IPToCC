@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import ipaddress
 import os
+import threading
 from functools import lru_cache
 
-import unqlite
-
+from tinydb import TinyDB, JSONStorage, Query
+from tinydb.middlewares import CachingMiddleware
 
 __author__ = "Ronie Martinez"
 __copyright__ = "Copyright 2017, Ronie Martinez"
@@ -16,30 +17,31 @@ __email__ = "ronmarti18@gmail.com"
 __status__ = "Production"
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-database = unqlite.UnQLite(os.path.join(dir_path, 'rir_statistics_exchange.db'))
+caching_middleware = CachingMiddleware(JSONStorage)
+database = TinyDB(os.path.join(dir_path, 'rir_statistics_exchange.json'), storage=caching_middleware)
+query = Query()
 
-
-@lru_cache(maxsize=2)
-def get_collection(type_):
-    return database.collection(type_).all()
+lock = threading.Lock()
 
 
 @lru_cache(maxsize=100000)
 def ipv4_get_country_code(ip_address):
-    for record in get_collection('ipv4'):
-        start_address = ipaddress.IPv4Address(record.get('start'))
-        if start_address <= ip_address < start_address + record.get('value'):
-            return record.get('country_code')
-    return None
+    with lock:
+        for record in database.search(query.type == 'ipv4'):
+            start_address = ipaddress.IPv4Address(record.get('start'))
+            if start_address <= ip_address < start_address + record.get('value'):
+                return record.get('country_code')
+        return None
 
 
 @lru_cache(maxsize=100000)
 def ipv6_get_country_code(ip_address):
-    for record in get_collection('ipv6'):
-        network = ipaddress.IPv6Network('{}/{}'.format(record.get('start'), record.get('value')))
-        if ip_address in network:
-            return record.get('country_code')
-    return None
+    with lock:
+        for record in database.search(query.type == 'ipv6'):
+            network = ipaddress.IPv6Network('{}/{}'.format(record.get('start'), record.get('value')))
+            if ip_address in network:
+                return record.get('country_code')
+        return None
 
 
 def get_country_code(ip_address):

@@ -4,6 +4,10 @@ Changes to IPToCC.
 
 ## [Unreleased]
 
+## [v1.0.6]
+### Changed
+- Used TinyDB and threading.Lock().
+
 ## [v1.0.5]
 ### Fixed
 - Collection returns NoneType.
@@ -26,7 +30,8 @@ Changes to IPToCC.
 - Support for IPv4 and IPv6 addresses.
 - PyPi setup.
 
-[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/1.0.5...master
+[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/1.0.6...master
+[v1.0.6]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.6
 [v1.0.5]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.5
 [v1.0.4]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.4
 [v1.0.3]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.3

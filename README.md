@@ -35,8 +35,13 @@ country_code = iptocc.get_country_code('<IPv4/IPv6 address>')
 
 # Libraries Used
 
-- [Cython](http://cython.org/)
-- [unqlite-python](https://github.com/coleifer/unqlite-python)
+- [TinyDB](https://github.com/msiemens/tinydb)
+- [UltraJSON](https://github.com/esnme/ultrajson)
+
+# Old implementations
+
+- [SQLAlchemy](https://www.sqlalchemy.org/) + SQLite - Not thread-safe
+- [UnQLite](https://github.com/coleifer/unqlite-python) - large database file, problems with thread-safety
 
 
 # References
