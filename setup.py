@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 import ssl
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-VERSION = open('VERSION').read().strip()
+VERSION = open('iptocc/VERSION').read().strip()
 REQUIREMENTS = []
-with open('requirements.txt') as f:
+with open('iptocc/requirements.txt') as f:
     for line in f:
         REQUIREMENTS.append(line.strip())
 
 setup(
     name='IPToCC',
     version=VERSION,
-    packages=['iptocc'],
+    packages=find_packages(),
     url='https://github.com/Code-ReaQtor/IPToCC',
     download_url='https://github.com/Code-ReaQtor/IPToCC/tarball/{}'.format(VERSION),
     license='MIT',
@@ -29,5 +29,8 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     install_requires=REQUIREMENTS,
-    package_data={'iptocc': ['rir_statistics_exchange.db']}
+    package_data={
+        'iptocc': ['rir_statistics_exchange.json', 'VERSION', 'requirements.txt'],
+        '': ['setup.cfg', 'README']
+    }
 )

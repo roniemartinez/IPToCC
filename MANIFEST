@@ -1,8 +1,0 @@
-setup.cfg
-README
-VERSION
-requirements.txt
-setup.py
-iptocc/__init__.py
-iptocc/rir_statistics_exchange.json
-CHANGELOG.md
