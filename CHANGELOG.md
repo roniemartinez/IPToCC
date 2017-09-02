@@ -4,6 +4,14 @@ Changes to IPToCC.
 
 ## [Unreleased]
 
+## [v1.1.1]
+### Changed
+- Using [JSONStorageReadOnly](https://github.com/msiemens/tinydb/issues/136).
+
+### Added
+- Pyton 2 support.
+- Logger in debug mode.
+
 ## [v1.0.8]
 ### Fixed
 - Missing packages in requirements.txt.
@@ -38,7 +46,8 @@ Changes to IPToCC.
 - Support for IPv4 and IPv6 addresses.
 - PyPi setup.
 
-[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/1.0.7...master
+[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/1.1.1...master
+[v1.1.1]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.1.1
 [v1.0.7]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.7
 [v1.0.6]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.6
 [v1.0.5]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.0.5
