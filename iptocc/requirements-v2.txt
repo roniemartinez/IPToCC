@@ -1,0 +1,5 @@
+tinydb==3.2.3
+ujson==1.35
+six==1.10.0
+backports.functools_lru_cache==1.5
+ipaddress==1.0.22

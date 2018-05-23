@@ -1,3 +1,1 @@
-tinydb==3.2.3
-ujson==1.35
-six==1.10.0
+requirements-v3.txt
