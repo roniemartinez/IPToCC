@@ -51,7 +51,12 @@ def ipv4_get_country_code(ip_address):
 def ipv6_get_country_code(ip_address):
     with lock:
         for record in database.search(query.type == 'ipv6'):
-            recordUnicode = unicode('{}/{}'.format(record.get('start'), record.get('value')))
+            recordUnicode = '{}/{}'.format(record.get('start'), record.get('value'))
+
+            # Python 2 needs the string in unicode, perhaps?
+            if six.PY2:
+                recordUnicode = unicode(recordUnicode)
+                
             network = ipaddress.IPv6Network(recordUnicode)
             if ip_address in network:
                 country_code = record.get('country_code')
