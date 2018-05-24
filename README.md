@@ -53,7 +53,7 @@ country_code = iptocc.get_country_code('<IPv4/IPv6 address>')
 
 ### Docker Environment
 
-This repo contains a Dockerfile in the case that a local development environment is needed to build the app as well as run tests in both Python 2 and Python 3.
+This repo contains a Dockerfile in the case that a local development environment is needed to install the dependencies, build the database, as well as run tests in both Python 2 and Python 3.
 
 To build the Docker image, see the following two example commands:
 
@@ -62,11 +62,14 @@ docker build --build-arg VERSION=2 -t iptocc:v2 ./
 docker build --build-arg VERSION=3 -t iptocc:v3 ./
 ```
 
-To run the tests within a containerized environment, see the following two example commands:
+To build the Docker images without running the `database_builder.py` script, pass `--build-arg SKIP_BUILD_DB=true` to the build command.
+
+
+The default command that is run within the Docker image is `python setup.py test`. To run the tests within a Docker container, see the following two example commands:
 
 ```sh
-docker run --rm -it -e PYTHONPATH=. iptocc:v2 python test/test_search_database.py -v
-docker run --rm -it -e PYTHONPATH=. iptocc:v3 python test/test_search_database.py -v
+docker run --rm -it -e PYTHONPATH=. iptocc:v2
+docker run --rm -it -e PYTHONPATH=. iptocc:v3
 ```
 
 ## Author
