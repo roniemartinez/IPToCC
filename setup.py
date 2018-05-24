@@ -24,7 +24,8 @@ setup(
     author='Ronie Martinez',
     author_email='ronmarti18@gmail.com',
     description='Get country code of IPv4/IPv6 address. Address lookup is done offline.',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
@@ -38,6 +39,6 @@ setup(
     tests_require=['pytest', 'pytest-cov', 'codecov'],
     package_data={
         'iptocc': ['rir_statistics_exchange.json', 'VERSION', 'requirements.txt'],
-        '': ['setup.cfg', 'README']
+        '': ['setup.cfg', 'README.md']
     }
 )
