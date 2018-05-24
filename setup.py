@@ -11,8 +11,8 @@ REQUIREMENTS = []
 with open('iptocc/requirements.txt') as f:
     for line in f:
         REQUIREMENTS.append(line.strip())
-if sys.version_info[0] == '2':
-    REQUIREMENTS += ['backports.functools_lru_cache']
+if sys.version_info[0] == 2:
+    REQUIREMENTS += ['backports.functools_lru_cache', 'ipaddress']
 
 setup(
     name='IPToCC',
@@ -33,7 +33,9 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
     ],
+    setup_requires=['pytest-runner'],
     install_requires=REQUIREMENTS,
+    tests_require=['pytest', 'pytest-cov', 'codecov'],
     package_data={
         'iptocc': ['rir_statistics_exchange.json', 'VERSION', 'requirements.txt'],
         '': ['setup.cfg', 'README']
