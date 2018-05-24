@@ -51,7 +51,13 @@ def ipv4_get_country_code(ip_address):
 def ipv6_get_country_code(ip_address):
     with lock:
         for record in database.search(query.type == 'ipv6'):
-            network = ipaddress.IPv6Network('{}/{}'.format(record.get('start'), record.get('value')))
+            recordUnicode = '{}/{}'.format(record.get('start'), record.get('value'))
+
+            # Python 2 needs the string in unicode, perhaps?
+            if six.PY2:
+                recordUnicode = unicode(recordUnicode)
+                
+            network = ipaddress.IPv6Network(recordUnicode)
             if ip_address in network:
                 country_code = record.get('country_code')
                 if six.PY2:
@@ -61,13 +67,16 @@ def ipv6_get_country_code(ip_address):
         logger.debug('Cannot find country code for ip=%s', ip_address)
         return None
 
+def convert_ip_string(ip_address_string):
+    if isinstance(ip_address_string, six.text_type):
+        return ipaddress.ip_address(ip_address_string)
+    elif six.PY2 and isinstance(ip_address_string, six.string_types):
+        return ipaddress.ip_address(unicode(ip_address_string))
+    else:
+        raise ValueError("Could not convert the value to a valid IPv4 or IPv6 object. Are you sure that you passed a valid string?")
 
 def get_country_code(ip_address):
-    # convert string to ipaddress.IPv4Address or ipaddress.IPv6Address
-    if isinstance(ip_address, six.text_type):
-        ip_address = ipaddress.ip_address(ip_address)
-    if six.PY2 and isinstance(ip_address, six.string_types):
-        ip_address = ipaddress.ip_address(unicode(ip_address))
-    if isinstance(ip_address, ipaddress.IPv4Address):
-        return ipv4_get_country_code(ip_address)  # IPv4
-    return ipv6_get_country_code(ip_address)  # IPv6
+    ip_address_string = convert_ip_string(ip_address)
+    if isinstance(ip_address_string, ipaddress.IPv4Address):
+        return ipv4_get_country_code(ip_address_string)  # IPv4
+    return ipv6_get_country_code(ip_address_string)  # IPv6
