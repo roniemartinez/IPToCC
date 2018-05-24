@@ -3,7 +3,7 @@ import csv
 import hashlib
 import os
 import threading
-import urllib.request
+from six.moves import urllib
 
 import iptocc
 
