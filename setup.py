@@ -1,7 +1,13 @@
 #!/usr/bin/env python
+import sys
+
 from setuptools import setup
 
-VERSION = '2.0.0'
+VERSION = '2.0.0-2'
+
+REQUIREMENTS = ['pandas==0.23.4']
+if sys.version_info[0] == 2:
+    REQUIREMENTS += ['backports.functools-lru-cache==1.5', 'ipaddress==1.0.22']
 
 setup(
     name='IPToCC',
@@ -16,15 +22,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     keywords=[],
-    install_requires=['pandas==0.23.4'],
-    extras_require={
-        ':python_version < "3.2"': [
-            'backports.functools-lru-cache==1.5'
-        ],
-        ':python_version < "3.3"': [
-            'ipaddress==1.0.22'
-        ]
-    },
+    install_requires=REQUIREMENTS,
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: MIT License',
                  'Topic :: Software Development :: Libraries :: Python Modules',
