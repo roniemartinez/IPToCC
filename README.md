@@ -14,15 +14,15 @@
     </tr>
     <tr>
         <td>Travis CI</td>
-        <td><img src='https://img.shields.io/travis/Code-ReaQtor/IPToCC/develop.svg'></td>
+        <td><img src='https://img.shields.io/travis/Code-ReaQtor/IPToCC/master.svg'></td>
     </tr>
     <tr>
         <td>AppVeyor</td>
-        <td><img src='https://img.shields.io/appveyor/ci/Code-ReaQtor/IPToCC/develop.svg'></td>
+        <td><img src='https://img.shields.io/appveyor/ci/Code-ReaQtor/IPToCC/master.svg'></td>
     </tr>
     <tr>
         <td>CodeCov</td>
-        <td><img src='https://img.shields.io/codecov/c/github/Code-ReaQtor/IPToCC/develop.svg'></td>
+        <td><img src='https://img.shields.io/codecov/c/github/Code-ReaQtor/IPToCC/master.svg'></td>
     </tr>
     <tr>
         <td>Status</td>
