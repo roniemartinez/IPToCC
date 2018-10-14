@@ -6,8 +6,10 @@ from setuptools import setup
 VERSION = '2.0.0-2'
 
 REQUIREMENTS = ['pandas==0.23.4']
-if sys.version_info[0] == 2:
-    REQUIREMENTS += ['backports.functools-lru-cache==1.5', 'ipaddress==1.0.22']
+if sys.version_info[:2] < (3, 2):
+    REQUIREMENTS += ['backports.functools-lru-cache==1.5']
+if sys.version_info[:2] < (3, 3):
+    REQUIREMENTS += ['ipaddress==1.0.22']
 
 setup(
     name='IPToCC',
