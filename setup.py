@@ -1,23 +1,12 @@
 #!/usr/bin/env python
-import ssl
+from setuptools import setup
 
-import sys
-from setuptools import setup, find_packages
-
-ssl._create_default_https_context = ssl._create_unverified_context
-
-VERSION = open('iptocc/VERSION').read().strip()
-REQUIREMENTS = []
-with open('iptocc/requirements.txt') as f:
-    for line in f:
-        REQUIREMENTS.append(line.strip())
-if sys.version_info[0] == 2:
-    REQUIREMENTS += ['backports.functools_lru_cache', 'ipaddress']
+VERSION = '2.0.0'
 
 setup(
     name='IPToCC',
     version=VERSION,
-    packages=find_packages(),
+    packages=['iptocc'],
     url='https://github.com/Code-ReaQtor/IPToCC',
     download_url='https://github.com/Code-ReaQtor/IPToCC/tarball/{}'.format(VERSION),
     license='MIT',
@@ -26,19 +15,29 @@ setup(
     description='Get country code of IPv4/IPv6 address. Address lookup is done offline.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: MIT License',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
-    ],
-    setup_requires=['pytest-runner'],
-    install_requires=REQUIREMENTS,
-    tests_require=['pytest', 'pytest-cov', 'codecov'],
-    package_data={
-        'iptocc': ['rir_statistics_exchange.json', 'VERSION', 'requirements.txt'],
-        '': ['setup.cfg', 'README.md']
-    }
+    keywords=[],
+    install_requires=['pandas==0.23.4'],
+    extras_require={
+        ':python_version < "3.2"': [
+            'backports.functools-lru-cache==1.5'
+        ],
+        ':python_version < "3.3"': [
+            'ipaddress==1.0.22'
+        ]
+    },
+    classifiers=['Development Status :: 5 - Production/Stable',
+                 'License :: OSI Approved :: MIT License',
+                 'Topic :: Software Development :: Libraries :: Python Modules',
+                 'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3.5',
+                 'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
+                 'Topic :: Scientific/Engineering :: Mathematics'],
+    package_data={'iptocc': ['delegated-afrinic-extended-latest',
+                             'delegated-arin-extended-latest',
+                             'delegated-apnic-extended-latest',
+                             'delegated-lacnic-extended-latest',
+                             'delegated-ripencc-extended-latest'
+                             ]
+                  }
 )
