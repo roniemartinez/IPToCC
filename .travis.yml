@@ -1,17 +1,33 @@
 language: python
+
+cache: pip
+
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+  - 2.7
+  - 3.5
+  - 3.6
+
+matrix:
+  include:
+  - python: 3.7
+    dist: xenial
+    sudo: true
 
 install:
-  - python setup.py install
-  - pip install codecov
+  - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
 
 script:
-  - python database_builder.py
-  - python setup.py test
+  - pytest --cov=iptocc --cov-report=xml -v
 
 after_success:
-  - codecov
+  codecov
+
+deploy:
+  provider: pypi
+  user: $PYPI_USER
+  password: $PYPI_PASS
+  distributions: "sdist bdist_wheel"
+  on:
+    branch: master
+    condition: $TRAVIS_PYTHON_VERSION = "3.6"
