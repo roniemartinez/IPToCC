@@ -7,4 +7,5 @@ iptocc/delegated-apnic-extended-latest
 iptocc/delegated-arin-extended-latest
 iptocc/delegated-lacnic-extended-latest
 iptocc/delegated-ripencc-extended-latest
+iptocc/iso3166.csv
 CHANGELOG.md
