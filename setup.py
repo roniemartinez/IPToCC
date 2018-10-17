@@ -40,7 +40,8 @@ setup(
                              'delegated-arin-extended-latest',
                              'delegated-apnic-extended-latest',
                              'delegated-lacnic-extended-latest',
-                             'delegated-ripencc-extended-latest'
+                             'delegated-ripencc-extended-latest',
+                             'iso3166.csv'
                              ]
                   }
 )
