@@ -17,7 +17,7 @@
     </tr>
     <tr>
         <td>AppVeyor</td>
-        <td><img src='https://ci.appveyor.com/api/projects/status/1xmd0gr278bhu090?svg=true'></td>
+        <td><img src='https://ci.appveyor.com/api/projects/status/1xmd0gr278bhu090/branch/develop?svg=true'></td>
         <td>Supported versions</td>
         <td><img src='https://img.shields.io/pypi/pyversions/IPToCC.svg'></td>
     </tr>
