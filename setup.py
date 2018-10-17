@@ -3,7 +3,7 @@ import sys
 
 from setuptools import setup
 
-VERSION = '2.0.1'
+VERSION = '2.1.0'
 
 REQUIREMENTS = ['pandas==0.23.4']
 if sys.version_info[:2] < (3, 2):
@@ -40,7 +40,8 @@ setup(
                              'delegated-arin-extended-latest',
                              'delegated-apnic-extended-latest',
                              'delegated-lacnic-extended-latest',
-                             'delegated-ripencc-extended-latest'
+                             'delegated-ripencc-extended-latest',
+                             'iso3166.csv'
                              ]
                   }
 )

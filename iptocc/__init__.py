@@ -29,9 +29,14 @@ pandas.set_option('max_colwidth', -1)
 
 lock = threading.Lock()
 _rir_database = None  # type: pandas.DataFrame
+_countries = dict()  # type: dict
 
 
 class CountryCodeNotFound(Exception):
+    pass
+
+
+class CountryNotFound(Exception):
     pass
 
 
@@ -45,9 +50,14 @@ def convert_to_ip_object(row):
         return row['Start'], ''
 
 
+def load_rir_databases():
+    get_rir_database()
+
+
 def get_rir_database():
     global lock
     global _rir_database
+    global _countries
     if _rir_database is None:
         with lock:
             if _rir_database is None:
@@ -57,6 +67,11 @@ def get_rir_database():
                                               (_rir_database['Type'] != '*')]
                 _rir_database[['Start', 'End']] = _rir_database.apply(convert_to_ip_object, axis=1,
                                                                       result_type='expand')
+                countries = pandas.read_csv(
+                    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'iso3166.csv'),
+                    names=['country_code', 'country_name']
+                )
+                _countries = dict(zip(countries['country_code'].values, countries['country_name'].values))
                 logger.info('RIR databases loaded')
     return _rir_database
 
@@ -104,3 +119,12 @@ def get_country_code(address):
         return ipv4_get_country_code(address)
     logger.info("%s is IPv6", address)
     return ipv6_get_country_code(address)
+
+
+def get_country(address):
+    global _countries
+    try:
+        country_code = get_country_code(address)
+    except CountryCodeNotFound:
+        raise CountryNotFound
+    return _countries[country_code]
