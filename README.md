@@ -75,6 +75,7 @@ country_code = get_country_code('<IPv4/IPv6 address>')
 
 - [RIR Statistics Exchange Format](https://www.apnic.net/about-apnic/corporate-documents/documents/resource-guidelines/rir-statistics-exchange-format/)
 - [How can I compile an IP address to country lookup database to make available for free?](https://webmasters.stackexchange.com/questions/34628/how-can-i-compile-an-ip-address-to-country-lookup-database-to-make-available-for)
+- [ISO 3166 Country Codes](https://dev.maxmind.com/geoip/legacy/codes/iso3166/)
 
 ## Maintainers
 
