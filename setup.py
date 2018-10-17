@@ -3,7 +3,7 @@ import sys
 
 from setuptools import setup
 
-VERSION = '2.0.0'
+VERSION = '2.0.1'
 
 REQUIREMENTS = ['pandas==0.23.4']
 if sys.version_info[:2] < (3, 2):
@@ -28,10 +28,13 @@ setup(
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: MIT License',
                  'Topic :: Software Development :: Libraries :: Python Modules',
+                 'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3',
                  'Programming Language :: Python :: 3.5',
                  'Programming Language :: Python :: 3.6',
                  'Programming Language :: Python :: 3.7',
+                 'Programming Language :: Python :: Implementation :: CPython',
                  'Topic :: Scientific/Engineering :: Mathematics'],
     package_data={'iptocc': ['delegated-afrinic-extended-latest',
                              'delegated-arin-extended-latest',
