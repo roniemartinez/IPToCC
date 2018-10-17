@@ -2,37 +2,34 @@
 
  Get ISO country code of IPv4/IPv6 address. Address lookup is done locally.
 
-
 <table>
     <tr>
+        <td>License</td>
+        <td><img src='https://img.shields.io/pypi/l/IPToCC.svg'></td>
         <td>Version</td>
         <td><img src='https://img.shields.io/pypi/v/IPToCC.svg'></td>
     </tr>
     <tr>
-        <td>License</td>
-        <td><img src='https://img.shields.io/pypi/l/IPToCC.svg'></td>
-    </tr>
-    <tr>
         <td>Travis CI</td>
-        <td><img src='https://img.shields.io/travis/Code-ReaQtor/IPToCC/master.svg'></td>
+        <td><img src='https://travis-ci.org/Code-ReaQtor/IPToCC.svg?branch=master'></td>
+        <td>Coverage</td>
+        <td><img src='https://codecov.io/gh/Code-ReaQtor/IPToCC/branch/master/graph/badge.svg'></td>
     </tr>
     <tr>
         <td>AppVeyor</td>
-        <td><img src='https://img.shields.io/appveyor/ci/Code-ReaQtor/IPToCC/master.svg'></td>
-    </tr>
-    <tr>
-        <td>CodeCov</td>
-        <td><img src='https://img.shields.io/codecov/c/github/Code-ReaQtor/IPToCC/master.svg'></td>
-    </tr>
-    <tr>
-        <td>Status</td>
-        <td><img src='https://img.shields.io/pypi/status/IPToCC.svg'></td>
-    </tr>
-    <tr>
+        <td><img src='https://ci.appveyor.com/api/projects/status/1xmd0gr278bhu090/branch/master?svg=true'></td>
         <td>Supported versions</td>
         <td><img src='https://img.shields.io/pypi/pyversions/IPToCC.svg'></td>
     </tr>
     <tr>
+        <td>Wheel</td>
+        <td><img src='https://img.shields.io/pypi/wheel/IPToCC.svg'></td>
+        <td>Implementation</td>
+        <td><img src='https://img.shields.io/pypi/implementation/IPToCC.svg'></td>
+    </tr>
+    <tr>
+        <td>Status</td>
+        <td><img src='https://img.shields.io/pypi/status/IPToCC.svg'></td>
         <td>Show your support</td>
         <td><a href='https://saythanks.io/to/Code-ReaQtor'><img src='https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg'></a></td>
     </tr>

@@ -4,7 +4,11 @@ List of changes to IPToCC
 
 ## [Unreleased]
 
-## [2.0.0]
+## [2.0.1] - 2018-10-17
+### Added
+- More Shields (#3)
+
+## [2.0.0] - 2018-10-14
 ### Changed
 - Pandas core (#3)
 
@@ -54,7 +58,8 @@ List of changes to IPToCC
 - Support for IPv4 and IPv6 addresses.
 - PyPi setup.
 
-[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/2.0.0...master
+[Unreleased]: https://github.com/Code-ReaQtor/IPToCC/compare/2.0.1...master
+[2.0.1]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/2.0.1
 [2.0.0]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/2.0.0
 [1.1.2]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.1.2
 [1.1.1]: https://github.com/Code-ReaQtor/IPToCC/releases/tag/1.1.1
