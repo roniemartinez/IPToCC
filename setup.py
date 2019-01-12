@@ -3,7 +3,7 @@ import sys
 
 from setuptools import setup
 
-VERSION = '2.1.0'
+VERSION = '2.1.1'
 
 REQUIREMENTS = ['pandas==0.23.4']
 if sys.version_info[:2] < (3, 2):
@@ -15,8 +15,8 @@ setup(
     name='IPToCC',
     version=VERSION,
     packages=['iptocc'],
-    url='https://github.com/Code-ReaQtor/IPToCC',
-    download_url='https://github.com/Code-ReaQtor/IPToCC/tarball/{}'.format(VERSION),
+    url='https://github.com/roniemartinez/IPToCC',
+    download_url='https://github.com/roniemartinez/IPToCC/tarball/{}'.format(VERSION),
     license='MIT',
     author='Ronie Martinez',
     author_email='ronmarti18@gmail.com',

@@ -13,6 +13,10 @@ matrix:
     dist: xenial
     sudo: true
 
+branches:
+  except:
+    - /^[0-9]+\.[0-9]+\.[0-9]+$/
+
 install:
   - pip install -r requirements.txt
   - pip install -r test-requirements.txt
