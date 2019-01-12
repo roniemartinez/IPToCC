@@ -9,6 +9,10 @@ environment:
     - PYTHON: "C:\\Python37"
     - PYTHON: "C:\\Python37-x64"
 
+branches:
+  except:
+    - /^[0-9]+\.[0-9]+\.[0-9]+$/
+
 install:
   - "%PYTHON%\\Scripts\\pip.exe install -r requirements.txt"
   - "%PYTHON%\\Scripts\\pip.exe install -r test-requirements.txt"
