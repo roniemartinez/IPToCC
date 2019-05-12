@@ -9,30 +9,31 @@ python:
 
 matrix:
   include:
-  - python: 3.7
-    dist: xenial
-    sudo: true
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 branches:
   except:
-    - /^[0-9]+\.[0-9]+\.[0-9]+$/
+    - /^[0-9]+\.[0-9]+\.[0-9]+/
 
 install:
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
+  - pip install pipenv
+  - pipenv install --dev --skip-lock
+  - pipenv run pip install -r requirements.txt
+  - pipenv run update_rir
 
 script:
-  - pytest --cov=iptocc --cov-report=xml -v
+  pipenv run pytest --cov=iptocc --cov-report=xml -v
 
 after_success:
-  codecov
+  pipenv run codecov
 
 deploy:
-  - provider: pypi
-    user: $TEST_PYPI_USER
-    password: $TEST_PYPI_PASS
-    server: https://test.pypi.org/legacy/
-    distributions: "sdist bdist_wheel"
-    on:
-      branch: develop
-      condition: $TRAVIS_PYTHON_VERSION = "3.6"
+  provider: pypi
+  user: $PYPI_USER
+  password: $PYPI_PASS
+  distributions: "sdist bdist_wheel"
+  on:
+    branch: master
+    condition: $TRAVIS_PYTHON_VERSION = "3.6"

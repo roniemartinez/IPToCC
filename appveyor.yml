@@ -11,11 +11,13 @@ environment:
 
 branches:
   except:
-    - /^[0-9]+\.[0-9]+\.[0-9]+$/
+    - /^[0-9]+\.[0-9]+\.[0-9]+/
 
 install:
-  - "%PYTHON%\\Scripts\\pip.exe install -r requirements.txt"
-  - "%PYTHON%\\Scripts\\pip.exe install -r test-requirements.txt"
+  - "%PYTHON%\\Scripts\\pip.exe install pipenv"
+  - "%PYTHON%\\Scripts\\pipenv.exe install --dev --skip-lock"
+  - "%PYTHON%\\Scripts\\pipenv.exe run pip install -r requirements.txt"
+  - "%PYTHON%\\Scripts\\pipenv.exe run update_rir"
 
 build: off
 
@@ -23,7 +25,7 @@ cache:
   - '%LOCALAPPDATA%\pip\Cache'
 
 test_script:
-  - "%PYTHON%\\Scripts\\pytest.exe --cov=iptocc --cov-report=xml -v"
+  - "%PYTHON%\\Scripts\\pipenv.exe run pytest --cov=iptocc --cov-report=xml -v"
 
 on_success:
-  - "%PYTHON%\\Scripts\\codecov.exe -f coverage.xml"
+  - "%PYTHON%\\Scripts\\pipenv.exe run codecov -f coverage.xml"

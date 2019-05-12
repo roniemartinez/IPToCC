@@ -6,21 +6,19 @@
 # __email__ = "ronmarti18@gmail.com"
 import logging
 import os
-import sys
 import threading
+from ipaddress import ip_address, IPv4Address, IPv6Network
 
 import pandas
-from ipaddress import ip_address, IPv4Address, IPv6Network
+
+from iptocc.exceptions import CountryCodeNotFound, CountryNotFound
 
 try:
     from functools import lru_cache
 except ImportError:
-    # noinspection PyUnresolvedReferences
     from backports.functools_lru_cache import lru_cache
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
-                    format='%(asctime)s\t%(levelname)s\t%(module)s\t%(message)s')
-logger = logging.getLogger('iptocc')
+logger = logging.getLogger(__name__)
 
 pandas.set_option('display.max_columns', None)
 pandas.set_option('display.expand_frame_repr', False)
@@ -29,28 +27,6 @@ pandas.set_option('max_colwidth', -1)
 lock = threading.Lock()
 _rir_database = None  # type: pandas.DataFrame
 _countries = dict()  # type: dict
-
-
-class CountryCodeNotFound(Exception):
-    pass
-
-
-class CountryNotFound(Exception):
-    pass
-
-
-def convert_to_ip_object(row):
-    if row['Type'] == 'ipv4':
-        start = IPv4Address(row['Start'])
-        return start, start + int(row['Value'])
-    elif row['Type'] == 'ipv6':
-        return IPv6Network(row['Start'] + '/' + row['Value']), ''
-    else:
-        return row['Start'], ''
-
-
-def load_rir_databases():
-    get_rir_database()
 
 
 def get_rir_database():
@@ -64,8 +40,6 @@ def get_rir_database():
                 _rir_database = pandas.concat(read_rir_databases())
                 _rir_database = _rir_database[((_rir_database['Type'] == 'ipv4') | (_rir_database['Type'] == 'ipv6')) &
                                               (_rir_database['Type'] != '*')]
-                _rir_database[['Start', 'End']] = _rir_database.apply(convert_to_ip_object, axis=1,
-                                                                      result_type='expand')
                 countries = pandas.read_csv(
                     os.path.join(os.path.dirname(os.path.abspath(__file__)), 'iso3166.csv'),
                     names=['country_code', 'country_name']
@@ -77,7 +51,7 @@ def get_rir_database():
 
 def read_rir_databases():
     headers = ['Registry', 'Country Code', 'Type', 'Start', 'Value', 'Date', 'Status', 'Extensions']
-    iptocc_dir = os.path.dirname(os.path.abspath(__file__))
+    iptocc_dir = os.path.expanduser('~/.rir')
     for rir_database in os.listdir(iptocc_dir):
         if rir_database.startswith('delegated-') and rir_database.endswith('-extended-latest'):
             rir_database_path = os.path.join(iptocc_dir, rir_database)
@@ -89,22 +63,21 @@ def read_rir_databases():
 def ipv4_get_country_code(address):
     rir_database = get_rir_database()  # pandas.DataFrame
     ipv4_database = rir_database[rir_database['Type'] == 'ipv4']
-    result = ipv4_database[(ipv4_database['Start'] <= address) & (ipv4_database['End'] > address)]
-    try:
-        return result['Country Code'].tolist()[0]
-    except IndexError:
-        raise CountryCodeNotFound
+    for index, row in ipv4_database.iterrows():
+        start_address = IPv4Address(row['Start'])
+        if start_address <= address < start_address + int(row['Value']):
+            return row['Country Code']
+    raise CountryCodeNotFound
 
 
 @lru_cache(maxsize=100000)
 def ipv6_get_country_code(address):
     rir_database = get_rir_database()  # pandas.DataFrame
     ipv6_database = rir_database[rir_database['Type'] == 'ipv6']
-    result = ipv6_database[ipv6_database.apply(lambda row: address in row['Start'], axis=1, result_type='expand')]
-    try:
-        return result['Country Code'].tolist()[0]
-    except IndexError:
-        raise CountryCodeNotFound
+    for index, row in ipv6_database.iterrows():
+        if address in IPv6Network(row['Start'] + '/' + row['Value']):
+            return row['Country Code']
+    raise CountryCodeNotFound
 
 
 def get_country_code(address):

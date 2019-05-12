@@ -1,0 +1,12 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+codecov = "==2.0.15"
+pytest = "==4.1.1"
+pytest-cov = "==2.6.1"
+wheel = "==0.33.4"
+
+[packages]

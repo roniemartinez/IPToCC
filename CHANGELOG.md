@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 2.1.2 - 2019-05-12
+### Changed
+- Refactor code
+- Create console script
+
+### Removed
+- Exclude RIR databases from package
+
 ## 2.1.1 - 2019-01-13
 ### Changed
 - Update copyright

@@ -33,26 +33,22 @@
         <td>Downloads</td>
         <td><img src='https://img.shields.io/pypi/dm/IPToCC.svg'></td>
     </tr>
-    <tr>
-        <td>Show your support</td>
-        <td><a href='https://saythanks.io/to/roniemartinez'><img src='https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg'></a></td>
-    </tr>
 </table>
 
-## Features
-
-- [x] No external API call
-- [x] No paid GeoIP service
-- [x] Thread-safe
-- [x] Offline
-
-To learn about using IP addresses for geolocation, read the [Wikipedia article](https://en.wikipedia.org/wiki/Geolocation_software) to gain a basic understanding.
-
 ## Install
+
+Using `pip`
 
 ```bash
 pip install IPToCC
 ```
+
+Download/Update RIR databases. This will install the files to `~/.rir/` directory.
+
+```bash
+update_rir
+```
+
 
 ## Usage
 

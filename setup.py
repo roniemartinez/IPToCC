@@ -3,7 +3,7 @@ import sys
 
 from setuptools import setup
 
-VERSION = '2.1.1'
+VERSION = '2.1.2-rc1'
 
 REQUIREMENTS = ['pandas==0.23.4']
 if sys.version_info[:2] < (3, 2):
@@ -25,6 +25,9 @@ setup(
     long_description_content_type='text/markdown',
     keywords=[],
     install_requires=REQUIREMENTS,
+    entry_points={
+        'console_scripts': ['update_rir=iptocc.updater:update_rir_databases'],
+    },
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: MIT License',
                  'Topic :: Software Development :: Libraries :: Python Modules',
@@ -36,12 +39,5 @@ setup(
                  'Programming Language :: Python :: 3.7',
                  'Programming Language :: Python :: Implementation :: CPython',
                  'Topic :: Scientific/Engineering :: Mathematics'],
-    package_data={'iptocc': ['delegated-afrinic-extended-latest',
-                             'delegated-arin-extended-latest',
-                             'delegated-apnic-extended-latest',
-                             'delegated-lacnic-extended-latest',
-                             'delegated-ripencc-extended-latest',
-                             'iso3166.csv'
-                             ]
-                  }
+    package_data={'iptocc': ['iso3166.csv']}
 )
