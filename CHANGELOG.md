@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 2.1.2 - 2020-03-15
+### Added
+- Include isort, black, flake8, mypy, safety, bandit
+
+### Changed
+- Use poetry
+- Update copyright
+
 ## 2.1.1 - 2019-01-13
 ### Changed
 - Update copyright
