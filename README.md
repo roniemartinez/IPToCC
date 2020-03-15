@@ -11,13 +11,13 @@
     </tr>
     <tr>
         <td>Travis CI</td>
-        <td><img src='https://travis-ci.org/roniemartinez/IPToCC.svg?branch=develop'></td>
+        <td><img src='https://travis-ci.org/roniemartinez/IPToCC.svg?branch=master'></td>
         <td>Coverage</td>
-        <td><img src='https://codecov.io/gh/roniemartinez/IPToCC/branch/develop/graph/badge.svg'></td>
+        <td><img src='https://codecov.io/gh/roniemartinez/IPToCC/branch/master/graph/badge.svg'></td>
     </tr>
     <tr>
         <td>AppVeyor</td>
-        <td><img src='https://ci.appveyor.com/api/projects/status/1xmd0gr278bhu090/branch/develop?svg=true'></td>
+        <td><img src='https://ci.appveyor.com/api/projects/status/1xmd0gr278bhu090/branch/master?svg=true'></td>
         <td>Supported versions</td>
         <td><img src='https://img.shields.io/pypi/pyversions/IPToCC.svg'></td>
     </tr>
