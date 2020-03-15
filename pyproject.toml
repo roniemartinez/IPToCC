@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iptocc"
-version = "2.1.2-alpha.0"
+version = "2.1.2"
 description = "Get country code of IPv4/IPv6 address. Address lookup is done offline."
 authors = ["Ronie Martinez <ronmarti18@gmail.com>"]
 license = "MIT"
