@@ -28,10 +28,12 @@ country_code(["8.8.8.8", "1.0.16.1"]);    // ["US", "JP"]
 
 Per-target entry points: `@roniemartinez/iptocc/{nodejs,bundler,web,deno,no-modules}`.
 
-A CLI is installed alongside the library:
+Run the CLI without installing via `npx`:
 
 ```bash
-$ iptocc 8.8.8.8 1.0.16.1
+$ npx @roniemartinez/iptocc 8.8.8.8 1.0.16.1
 8.8.8.8 US
 1.0.16.1 JP
 ```
+
+Or install the package and the `iptocc` bin is on your `PATH`.

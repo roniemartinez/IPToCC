@@ -2,7 +2,7 @@ name: Nightly RIR data refresh
 
 on:
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "17 1 * * *"
   workflow_dispatch:
 
 permissions:
@@ -91,7 +91,7 @@ jobs:
           uv run --project scripts scripts/tag.py rust
           uv run --project scripts scripts/tag.py python
           uv run --project scripts scripts/tag.py wasm
-          rust_ver=$(python3 -c "import tomllib; print(tomllib.loads(open('crate/Cargo.toml','rb').read())['package']['version'])")
-          py_ver=$(python3 -c "import tomllib; print(tomllib.loads(open('bindings/python/Cargo.toml','rb').read())['package']['version'])")
-          wasm_ver=$(python3 -c "import tomllib; print(tomllib.loads(open('bindings/wasm/Cargo.toml','rb').read())['package']['version'])")
+          rust_ver=$(python3 -c "import tomllib; print(tomllib.load(open('crate/Cargo.toml','rb'))['package']['version'])")
+          py_ver=$(python3 -c "import tomllib; print(tomllib.load(open('bindings/python/Cargo.toml','rb'))['package']['version'])")
+          wasm_ver=$(python3 -c "import tomllib; print(tomllib.load(open('bindings/wasm/Cargo.toml','rb'))['package']['version'])")
           git push --atomic origin master "refs/tags/rust-v${rust_ver}" "refs/tags/python-v${py_ver}" "refs/tags/wasm-v${wasm_ver}"

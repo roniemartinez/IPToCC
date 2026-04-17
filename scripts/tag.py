@@ -39,15 +39,17 @@ def tag_exists(tag: str) -> bool:
     return tag in result.stdout.strip().splitlines()
 
 
-def create_tag(tag: str, push: bool = False) -> None:
+def create_tag(tag: str, push: bool = False) -> bool:
     if tag_exists(tag):
         err_console.print(f"[yellow]warning:[/yellow] tag '{tag}' already exists, skipping")
-        return
+        return False
 
     subprocess.run(["git", "tag", tag], cwd=ROOT, check=True)
 
     if push:
         subprocess.run(["git", "push", "origin", tag], cwd=ROOT, check=True)
+
+    return True
 
 
 def main() -> int:
@@ -89,7 +91,9 @@ def main() -> int:
             console.print(f"dry-run: would {action} tag {tag}")
             continue
 
-        create_tag(tag, args.push)
+        if not create_tag(tag, args.push):
+            continue
+
         console.print(f"created {tag}")
 
         if args.push:

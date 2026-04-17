@@ -6,7 +6,7 @@ use wasm_bindgen::prelude::*;
 /// Returns a string (or `null`) for a single input, or an array of
 /// string-or-null for an array input. Throws `TypeError` on any other input.
 #[wasm_bindgen]
-pub fn country_code(input: JsValue) -> Result<JsValue, JsError> {
+pub fn country_code(input: JsValue) -> Result<JsValue, JsValue> {
     if let Some(s) = input.as_string() {
         return Ok(match ::iptocc::country_code(&s) {
             Some(cc) => JsValue::from_str(cc),
@@ -15,7 +15,7 @@ pub fn country_code(input: JsValue) -> Result<JsValue, JsError> {
     }
 
     if !js_sys::Array::is_array(&input) {
-        return Err(JsError::new("country_code expects a string or an array of strings"));
+        return Err(js_sys::TypeError::new("country_code expects a string or an array of strings").into());
     }
 
     let arr = js_sys::Array::from(&input);
