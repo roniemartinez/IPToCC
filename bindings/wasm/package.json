@@ -1,6 +1,6 @@
 {
   "name": "@roniemartinez/iptocc",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Fast, offline IP-to-country lookup. WASM bindings for the Rust iptocc crate.",
   "main": "pkg-nodejs/iptocc_wasm.js",
   "module": "pkg-bundler/iptocc_wasm.js",

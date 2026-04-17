@@ -1,6 +1,15 @@
-# iptocc (WASM bindings)
+# @roniemartinez/iptocc
 
-Fast, offline IP-to-country lookup. WebAssembly bindings over the [iptocc](https://github.com/roniemartinez/IPToCC) Rust crate. Targets Node, browser bundlers, web (no bundler), no-modules, and Deno.
+Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup for JavaScript.
+
+## Features
+
+- Offline lookup, no API keys, no network calls
+- IPv4 and IPv6 in one call
+- Single string OR batch (array of strings)
+- Multi-target output: Node, bundlers, browser, Deno, no-modules
+- `iptocc` CLI installed alongside the library
+- Database refreshed nightly from the five Regional Internet Registries
 
 ## Install
 
@@ -10,31 +19,19 @@ npm install @roniemartinez/iptocc
 
 ## Usage
 
-### Node (CommonJS)
-
 ```javascript
 const { country_code } = require("@roniemartinez/iptocc");
 
-country_code("8.8.8.8");                // "US"
-country_code("2001:4860:4860::8888");   // "US"
-country_code("10.0.0.0");               // undefined
+country_code("8.8.8.8");                  // "US"
+country_code(["8.8.8.8", "1.0.16.1"]);    // ["US", "JP"]
 ```
 
-### Bundlers, browser, Deno
+Per-target entry points: `@roniemartinez/iptocc/{nodejs,bundler,web,deno,no-modules}`.
 
-```javascript
-import { country_code } from "@roniemartinez/iptocc";
-
-country_code("8.8.8.8");                // "US"
-```
-
-The package's `exports` field maps to per-target entry points: `@roniemartinez/iptocc/nodejs`, `@roniemartinez/iptocc/bundler`, `@roniemartinez/iptocc/web`, `@roniemartinez/iptocc/deno`, `@roniemartinez/iptocc/no-modules`.
-
-A command-line tool is installed alongside the library:
+A CLI is installed alongside the library:
 
 ```bash
-iptocc 8.8.8.8
-# US
+$ iptocc 8.8.8.8 1.0.16.1
+8.8.8.8 US
+1.0.16.1 JP
 ```
-
-See the [repository README](https://github.com/roniemartinez/IPToCC) for the full feature list, benchmarks, and data sources.
