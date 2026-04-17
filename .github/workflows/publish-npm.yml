@@ -1,0 +1,54 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'wasm-v*'
+      - 'all-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish iptocc to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4.3.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
+        with:
+          toolchain: stable
+          targets: wasm32-unknown-unknown
+      - uses: taiki-e/install-action@v2.75.3
+        with:
+          tool: wasm-pack
+      - uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24.14.1"
+          registry-url: "https://registry.npmjs.org"
+      - name: Build all wasm targets
+        working-directory: bindings/wasm
+        run: |
+          wasm-pack build --target nodejs --out-dir pkg-nodejs
+          wasm-pack build --target bundler --out-dir pkg-bundler
+          wasm-pack build --target web --out-dir pkg-web
+          wasm-pack build --target no-modules --out-dir pkg-no-modules
+          wasm-pack build --target deno --out-dir pkg-deno
+          find pkg-nodejs pkg-bundler pkg-web pkg-no-modules pkg-deno -name .gitignore -delete
+      - name: Publish to npm
+        working-directory: bindings/wasm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [[ "$version" == *-* ]]; then
+            npm publish --provenance --access public --tag next
+          else
+            npm publish --provenance --access public
+          fi

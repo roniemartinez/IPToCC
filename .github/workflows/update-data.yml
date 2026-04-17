@@ -1,0 +1,97 @@
+name: Nightly RIR data refresh
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh RIR delegated data and publish if changed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.1
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ secrets.DATA_PUSH_TOKEN }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v2.9.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.6.0
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3.2.4
+
+      - name: Fetch RIR delegated files
+        run: |
+          set -euxo pipefail
+          mkdir -p data
+          declare -A URLS=(
+            [afrinic]=https://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest
+            [arin]=https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest
+            [apnic]=https://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest
+            [lacnic]=https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest
+            [ripencc]=https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest
+          )
+          for rir in "${!URLS[@]}"; do
+            curl -sSfL --retry 3 --retry-delay 5 -o "data/delegated-${rir}-extended-latest" "${URLS[$rir]}"
+          done
+
+      - name: Regenerate binary tables
+        run: cargo run -p iptocc --bin generate-data
+
+      - name: Detect changes in generated bins
+        id: diff
+        run: |
+          if git diff --quiet --exit-code crate/src/data/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No bin changes; nothing to publish."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump minor versions
+        if: steps.diff.outputs.changed == 'true'
+        working-directory: scripts
+        run: |
+          uv run python bump.py rust minor
+          uv run python bump.py python minor
+          uv run python bump.py wasm minor
+
+      - name: Refresh Cargo.lock after version bumps
+        if: steps.diff.outputs.changed == 'true'
+        run: cargo metadata --format-version 1 > /dev/null
+
+      - name: Commit, rebase, create tags, atomic push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          set -euxo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ crate/src/data/ crate/Cargo.toml bindings/python/Cargo.toml bindings/wasm/Cargo.toml bindings/wasm/package.json Cargo.lock
+          git commit -m "chore(data): nightly RIR refresh and version bump"
+          git pull --rebase --autostash origin master
+          uv run --project scripts scripts/tag.py rust
+          uv run --project scripts scripts/tag.py python
+          uv run --project scripts scripts/tag.py wasm
+          rust_ver=$(python3 -c "import tomllib; print(tomllib.load(open('crate/Cargo.toml','rb'))['package']['version'])")
+          py_ver=$(python3 -c "import tomllib; print(tomllib.load(open('bindings/python/Cargo.toml','rb'))['package']['version'])")
+          wasm_ver=$(python3 -c "import tomllib; print(tomllib.load(open('bindings/wasm/Cargo.toml','rb'))['package']['version'])")
+          git push --atomic origin master "refs/tags/rust-v${rust_ver}" "refs/tags/python-v${py_ver}" "refs/tags/wasm-v${wasm_ver}"

@@ -1,0 +1,19 @@
+[package]
+name = "iptocc-py"
+description = "Python bindings for iptocc, a fast IP-to-country lookup library written in Rust"
+version = "3.0.0-alpha.1"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+publish = false
+
+[lib]
+name = "iptocc"
+crate-type = ["cdylib"]
+
+[dependencies]
+iptocc = { path = "../../crate" }
+pyo3 = { version = "=0.28.3", features = ["extension-module", "abi3-py310"] }
