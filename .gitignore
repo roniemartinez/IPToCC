@@ -62,3 +62,22 @@ venv.bak/
 .mypy_cache/
 .gitignore
 .idea/*
+# Rust
+/target
+Cargo.lock.bak
+
+# Python (additional, uv + maturin)
+.venv
+.uv/
+uv.lock.bak
+bindings/python/dist/
+bindings/python/python/iptocc/*.so
+bindings/python/python/iptocc/*.pyd
+
+# WASM
+bindings/wasm/node_modules/
+bindings/wasm/pkg-*/
+bindings/wasm/package-lock.json
+
+# Taskfile
+.task/

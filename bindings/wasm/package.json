@@ -1,0 +1,69 @@
+{
+  "name": "@roniemartinez/iptocc",
+  "version": "1.0.0-alpha.1",
+  "description": "Fast, offline IP-to-country lookup. WASM bindings for the Rust iptocc crate.",
+  "main": "pkg-nodejs/iptocc_wasm.js",
+  "module": "pkg-bundler/iptocc_wasm.js",
+  "browser": "pkg-web/iptocc_wasm.js",
+  "types": "pkg-nodejs/iptocc_wasm.d.ts",
+  "exports": {
+    ".": {
+      "types": "./pkg-nodejs/iptocc_wasm.d.ts",
+      "node": {
+        "require": "./pkg-nodejs/iptocc_wasm.js",
+        "import": "./pkg-bundler/iptocc_wasm.js"
+      },
+      "deno": "./pkg-deno/iptocc_wasm.js",
+      "browser": "./pkg-web/iptocc_wasm.js",
+      "default": "./pkg-bundler/iptocc_wasm.js"
+    },
+    "./nodejs": "./pkg-nodejs/iptocc_wasm.js",
+    "./bundler": "./pkg-bundler/iptocc_wasm.js",
+    "./web": "./pkg-web/iptocc_wasm.js",
+    "./deno": "./pkg-deno/iptocc_wasm.js",
+    "./no-modules": "./pkg-no-modules/iptocc_wasm.js"
+  },
+  "bin": {
+    "iptocc": "cli.cjs"
+  },
+  "files": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "cli.cjs",
+    "pkg-bundler/",
+    "pkg-deno/",
+    "pkg-no-modules/",
+    "pkg-nodejs/",
+    "pkg-web/"
+  ],
+  "keywords": [
+    "geoip",
+    "country",
+    "ip",
+    "ipv4",
+    "ipv6",
+    "rust",
+    "wasm"
+  ],
+  "author": {
+    "name": "Ronie Martinez",
+    "email": "ronmarti18@gmail.com"
+  },
+  "license": "(MIT OR Apache-2.0)",
+  "homepage": "https://github.com/roniemartinez/IPToCC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roniemartinez/IPToCC.git",
+    "directory": "bindings/wasm"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "commander": "14.0.3"
+  },
+  "devDependencies": {
+    "mitata": "1.0.34"
+  }
+}

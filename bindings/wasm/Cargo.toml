@@ -1,0 +1,19 @@
+[package]
+name = "iptocc-wasm"
+description = "WASM bindings for iptocc, a fast IP-to-country lookup library written in Rust"
+version = "1.0.0-alpha.1"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+iptocc = { path = "../../crate" }
+js-sys = "=0.3.94"
+wasm-bindgen = "=0.2.117"

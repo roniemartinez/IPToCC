@@ -1,0 +1,47 @@
+[build-system]
+requires = ["maturin==1.13.1"]
+build-backend = "maturin"
+
+[project]
+name = "iptocc"
+description = "Fast, offline IP-to-country lookup. Python bindings over the Rust iptocc crate."
+requires-python = ">=3.10"
+license = "MIT OR Apache-2.0"
+license-files = ["LICENSE-MIT", "LICENSE-APACHE"]
+authors = [{ name = "Ronie Martinez", email = "ronmarti18@gmail.com" }]
+keywords = ["geoip", "country", "ip", "ipv4", "ipv6", "rust"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Rust",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+]
+dynamic = ["version"]
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/roniemartinez/IPToCC"
+Repository = "https://github.com/roniemartinez/IPToCC"
+
+[project.scripts]
+iptocc = "iptocc.cli:main"
+
+[tool.maturin]
+python-source = "python"
+features = ["pyo3/extension-module"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["B", "C4", "E", "F", "I", "N", "RUF", "SIM", "UP", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"python/iptocc/__init__.py" = ["F403", "F405", "I001"]

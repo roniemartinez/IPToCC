@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  rust:
+    desc: Run the Rust iptocc CLI
+    cmds:
+      - cargo run -q -p iptocc -- {{.CLI_ARGS}}
+
+  python:
+    desc: Run the Python iptocc CLI (rebuilds the extension if sources changed)
+    dir: bindings/python
+    cmds:
+      - uv run --with maturin maturin develop --quiet
+      - uv run iptocc {{.CLI_ARGS}}
+
+  wasm:
+    desc: Run the WASM iptocc CLI via node
+    deps: [build:wasm]
+    dir: bindings/wasm
+    cmds:
+      - node cli.cjs {{.CLI_ARGS}}
+
+  test:
+    desc: Run all tests (Rust, Python, WASM)
+    cmds:
+      - task: test:rust
+      - task: test:python
+      - task: test:wasm
+
+  build:wasm:
+    desc: Build WASM nodejs target
+    dir: bindings/wasm
+    sources:
+      - src/**/*.rs
+      - Cargo.toml
+      - ../../Cargo.toml
+      - ../../crate/src/**/*.rs
+      - ../../crate/Cargo.toml
+    generates:
+      - pkg-nodejs/iptocc_wasm.js
+    cmds:
+      - wasm-pack build --target nodejs --out-dir pkg-nodejs
+
+  build:python:
+    desc: Build Python extension
+    dir: bindings/python
+    sources:
+      - src/**/*.rs
+      - Cargo.toml
+      - ../../Cargo.toml
+      - ../../crate/src/**/*.rs
+      - ../../crate/Cargo.toml
+    cmds:
+      - uv run --with maturin maturin develop --release --quiet
+
+  test:rust:
+    desc: Run Rust tests
+    cmds:
+      - cargo test -p iptocc
+
+  test:python:
+    desc: Run Python tests
+    deps: [build:python]
+    dir: bindings/python
+    cmds:
+      - uv run --with pytest pytest tests/test_api.py -v
+
+  test:wasm:
+    desc: Run WASM tests via Node.js
+    deps: [build:wasm]
+    cmds:
+      - node --test bindings/wasm/tests/api.test.js
+
+  tag:
+    desc: Create release tags (e.g. `task tag -- python`). See scripts/tag.py --help.
+    cmds:
+      - uv run --project scripts scripts/tag.py {{.CLI_ARGS}}
+
+  bump:
+    desc: Bump the version of one or all bindings (e.g. `task bump -- wasm patch`). See scripts/bump.py --help.
+    cmds:
+      - uv run --project scripts scripts/bump.py {{.CLI_ARGS}}
+
+  bench:
+    desc: Run benchmarks for all three runtimes (Rust, Python, WASM). See BENCHMARK.md.
+    cmds:
+      - task: bench:rust
+      - task: bench:python
+      - task: bench:wasm
+
+  bench:rust:
+    desc: Run Rust core benchmarks via Criterion
+    cmds:
+      - cargo bench -p iptocc --bench lookup
+
+  bench:python:
+    desc: Run Python binding benchmarks via pytest-benchmark
+    deps: [build:python]
+    dir: bindings/python
+    cmds:
+      - >-
+        uv run --with pytest --with pytest-benchmark
+        pytest benchmarks/bench_lookup.py --benchmark-only
+        --benchmark-columns=mean,stddev,ops,rounds
+        --benchmark-group-by=group,param:name
+        --benchmark-sort=mean
+
+  bench:wasm:
+    desc: Run WASM binding benchmarks via mitata
+    deps: [build:wasm]
+    dir: bindings/wasm
+    cmds:
+      - node benchmarks/bench_lookup.mjs

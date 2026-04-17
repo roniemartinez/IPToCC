@@ -1,0 +1,32 @@
+[package]
+name = "iptocc"
+description = "Fast, offline IPv4/IPv6 address to ISO-3166 country code lookup using RIR delegated statistics"
+version = "1.0.0-alpha.1"
+default-run = "iptocc"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+keywords = ["geoip", "country", "ip", "ipv4", "ipv6"]
+categories = ["command-line-utilities", "network-programming"]
+
+[lib]
+name = "iptocc"
+path = "src/lib.rs"
+
+[[bin]]
+name = "iptocc"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.6.0", features = ["derive"] }
+
+[dev-dependencies]
+test-case = "3.3.1"
+criterion = "0.8.2"
+
+[[bench]]
+name = "lookup"
+harness = false
