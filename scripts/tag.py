@@ -39,16 +39,12 @@ def tag_exists(tag: str) -> bool:
     return tag in result.stdout.strip().splitlines()
 
 
-def create_tag(tag: str, push: bool = False) -> bool:
+def create_tag(tag: str) -> bool:
     if tag_exists(tag):
         err_console.print(f"[yellow]warning:[/yellow] tag '{tag}' already exists, skipping")
         return False
 
     subprocess.run(["git", "tag", tag], cwd=ROOT, check=True)
-
-    if push:
-        subprocess.run(["git", "push", "origin", tag], cwd=ROOT, check=True)
-
     return True
 
 
@@ -72,7 +68,6 @@ def main() -> int:
             "Omit to create a single all-vX.Y.Z tag (requires all bindings to be on the same version)."
         ),
     )
-    parser.add_argument("--push", action="store_true", help="push the tag to origin after creating it")
     parser.add_argument("--dry-run", action="store_true", help="show what would be done without creating the tag")
     args = parser.parse_args()
 
@@ -87,17 +82,11 @@ def main() -> int:
 
     for tag in tags:
         if args.dry_run:
-            action = "create and push" if args.push else "create"
-            console.print(f"dry-run: would {action} tag {tag}")
+            console.print(f"dry-run: would create tag {tag}")
             continue
 
-        if not create_tag(tag, args.push):
-            continue
-
-        console.print(f"created {tag}")
-
-        if args.push:
-            console.print(f"pushed {tag}")
+        if create_tag(tag):
+            console.print(f"created {tag}")
 
     return 0
 
