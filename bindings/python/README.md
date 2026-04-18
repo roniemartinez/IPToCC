@@ -3,7 +3,7 @@
 Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup for Python.
 
 > [!IMPORTANT]
-> **iptocc 3.0 is a complete Rust rewrite.** Versions 2.x and earlier were pure-Python on top of pandas. The public API stays mostly compatible (see migration notes below) but is roughly 65,000x faster on bulk workloads and adds a batch API. IPv6 is still supported.
+> **iptocc 3.0 is a complete Rust rewrite.** Versions 2.x and earlier were pure-Python on top of pandas. The public API stays mostly compatible (see migration notes below), single-lookup latency dropped from ~78 ms to ~100 ns, and a batch API was added. IPv6 is still supported.
 
 ## Features
 

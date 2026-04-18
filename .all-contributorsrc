@@ -8,6 +8,39 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "roniemartinez",
+      "name": "Ronie Martinez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2573537?v=4",
+      "profile": "https://ron.sh/",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "maintenance",
+        "review"
+      ]
+    },
+    {
+      "login": "tatemz",
+      "name": "Tate Barber",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2190655?v=4",
+      "profile": "https://github.com/tatemz",
+      "contributions": [
+        "code",
+        "doc",
+        "infra"
+      ]
+    },
+    {
+      "login": "mathgeek12",
+      "name": "mathgeek12",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36207893?v=4",
+      "profile": "https://github.com/mathgeek12",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
       "login": "jamesdolan",
       "name": "James Dolan",
       "avatar_url": "https://avatars.githubusercontent.com/u/7540221?v=4",
