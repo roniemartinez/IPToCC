@@ -1,18 +1,19 @@
-use test_case::test_case;
+use rstest::rstest;
 
-#[test_case("41.0.0.1",               Some("ZA") ; "afrinic_v4")]
-#[test_case("2001:4200::1",           Some("ZA") ; "afrinic_v6")]
-#[test_case("1.0.16.1",               Some("JP") ; "apnic_v4")]
-#[test_case("2001:200::1",            Some("JP") ; "apnic_v6")]
-#[test_case("8.8.8.8",                Some("US") ; "arin_v4")]
-#[test_case("2001:4860:4860::8888",   Some("US") ; "arin_v6")]
-#[test_case("200.160.0.1",            Some("BR") ; "lacnic_v4")]
-#[test_case("2001:1280::1",           Some("BR") ; "lacnic_v6")]
-#[test_case("193.0.6.139",            Some("NL") ; "ripencc_v4")]
-#[test_case("2001:67c:18::1",         Some("NL") ; "ripencc_v6")]
-#[test_case("10.0.0.0",               None       ; "private_ipv4")]
-#[test_case("not-an-ip",              None       ; "malformed")]
-fn country_code_lookup(addr: &str, expected: Option<&str>) {
+#[rstest]
+#[case::afrinic_v4("41.0.0.1", Some("ZA"))]
+#[case::afrinic_v6("2001:4200::1", Some("ZA"))]
+#[case::apnic_v4("1.0.16.1", Some("JP"))]
+#[case::apnic_v6("2001:200::1", Some("JP"))]
+#[case::arin_v4("8.8.8.8", Some("US"))]
+#[case::arin_v6("2001:4860:4860::8888", Some("US"))]
+#[case::lacnic_v4("200.160.0.1", Some("BR"))]
+#[case::lacnic_v6("2001:1280::1", Some("BR"))]
+#[case::ripencc_v4("193.0.6.139", Some("NL"))]
+#[case::ripencc_v6("2001:67c:18::1", Some("NL"))]
+#[case::private_ipv4("10.0.0.0", None)]
+#[case::malformed("not-an-ip", None)]
+fn country_code_lookup(#[case] addr: &str, #[case] expected: Option<&str>) {
     assert_eq!(iptocc::country_code(addr), expected);
 }
 
