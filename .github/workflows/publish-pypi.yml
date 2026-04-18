@@ -37,7 +37,7 @@ jobs:
           args: --release --out dist
           sccache: "true"
           manylinux: auto
-      - uses: actions/upload-artifact@v7.0.0
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: wheels-${{ matrix.platform.os }}-${{ matrix.platform.target }}
           path: bindings/python/dist
@@ -57,7 +57,7 @@ jobs:
           working-directory: bindings/python
           command: sdist
           args: --out dist
-      - uses: actions/upload-artifact@v7.0.0
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: wheels-sdist
           path: bindings/python/dist
