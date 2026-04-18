@@ -67,7 +67,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Bump minor versions
+      - name: Bump patch versions
         if: steps.diff.outputs.changed == 'true'
         working-directory: scripts
         run: |
