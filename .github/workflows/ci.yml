@@ -71,7 +71,7 @@ jobs:
         with:
           toolchain: stable
       - uses: Swatinem/rust-cache@v2.9.1
-      - uses: actions/setup-python@v5.6.0
+      - uses: actions/setup-python@v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
       - uses: astral-sh/setup-uv@v3.2.4
