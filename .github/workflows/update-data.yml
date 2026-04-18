@@ -2,7 +2,7 @@ name: Nightly RIR data refresh
 
 on:
   schedule:
-    - cron: "17 1 * * *"
+    - cron: "17 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -67,13 +67,13 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Bump minor versions
+      - name: Bump patch versions
         if: steps.diff.outputs.changed == 'true'
         working-directory: scripts
         run: |
-          uv run python bump.py rust minor
-          uv run python bump.py python minor
-          uv run python bump.py wasm minor
+          uv run python bump.py rust patch
+          uv run python bump.py python patch
+          uv run python bump.py wasm patch
 
       - name: Refresh Cargo.lock after version bumps
         if: steps.diff.outputs.changed == 'true'
