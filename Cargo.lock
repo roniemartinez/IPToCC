@@ -350,7 +350,7 @@ dependencies = [
 
 [[package]]
 name = "iptocc"
-version = "1.0.0-alpha.2"
+version = "1.0.0"
 dependencies = [
  "clap",
  "criterion",
@@ -359,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "iptocc-py"
-version = "3.0.0-alpha.1"
+version = "3.0.0"
 dependencies = [
  "iptocc",
  "pyo3",
@@ -367,7 +367,7 @@ dependencies = [
 
 [[package]]
 name = "iptocc-wasm"
-version = "1.0.0-alpha.2"
+version = "1.0.0"
 dependencies = [
  "iptocc",
  "js-sys",
