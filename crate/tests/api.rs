@@ -1,3 +1,5 @@
+use core::net::{Ipv4Addr, Ipv6Addr};
+
 use rstest::rstest;
 
 #[rstest]
@@ -35,4 +37,27 @@ fn batch_accepts_vec_of_string() {
     let addrs: Vec<String> = vec!["8.8.8.8".to_string(), "10.0.0.0".to_string()];
     let results = iptocc::country_codes(&addrs);
     assert_eq!(results, vec![Some("US"), None]);
+}
+
+#[rstest]
+#[case::afrinic(Ipv4Addr::new(41, 58, 0, 1), Some("NG"))]
+#[case::apnic(Ipv4Addr::new(118, 175, 0, 1), Some("TH"))]
+#[case::arin(Ipv4Addr::new(9, 9, 9, 9), Some("US"))]
+#[case::lacnic(Ipv4Addr::new(190, 191, 0, 1), Some("AR"))]
+#[case::ripencc(Ipv4Addr::new(217, 0, 0, 1), Some("DE"))]
+#[case::link_local(Ipv4Addr::new(169, 254, 1, 1), None)]
+fn country_code_v4_typed(#[case] ip: Ipv4Addr, #[case] expected: Option<&str>) {
+    assert_eq!(iptocc::country_code_v4(ip), expected);
+}
+
+#[rstest]
+#[case::afrinic("2c0f::1", Some("ZA"))]
+#[case::apnic("2400:3200::1", Some("CN"))]
+#[case::arin("2600:1404::1", Some("US"))]
+#[case::lacnic("2800:3f0:4000::1", Some("AR"))]
+#[case::ripencc("2a00:1450::1", Some("IE"))]
+#[case::documentation("2001:db8::1", None)]
+fn country_code_v6_typed(#[case] addr: &str, #[case] expected: Option<&str>) {
+    let ip: Ipv6Addr = addr.parse().unwrap();
+    assert_eq!(iptocc::country_code_v6(ip), expected);
 }
