@@ -8,7 +8,7 @@ static V6_BIN: &[u8] = include_bytes!("data/v6.bin");
 
 const FIRST_LEVEL_BYTES: usize = 65537 * 4;
 const V4_COUNT: usize = (V4_BIN.len() - FIRST_LEVEL_BYTES) / 10;
-const V6_COUNT: usize = V6_BIN.len() / 34;
+const V6_COUNT: usize = (V6_BIN.len() - FIRST_LEVEL_BYTES) / 34;
 
 /// Looks up the ISO 3166-1 alpha-2 country code for an IPv4 or IPv6 address.
 ///
@@ -19,6 +19,22 @@ pub fn country_code(addr: &str) -> Option<&'static str> {
         IpAddr::V4(ip) => lookup_v4(ip),
         IpAddr::V6(ip) => lookup_v6(ip),
     }
+}
+
+/// Looks up the ISO 3166-1 alpha-2 country code for an already-parsed IPv4 address.
+///
+/// Faster than `country_code(&str)` because it skips the string parse. Use this
+/// when you already have an `Ipv4Addr` from elsewhere in your program.
+pub fn country_code_v4(ip: Ipv4Addr) -> Option<&'static str> {
+    lookup_v4(ip)
+}
+
+/// Looks up the ISO 3166-1 alpha-2 country code for an already-parsed IPv6 address.
+///
+/// Faster than `country_code(&str)` because it skips the string parse. Use this
+/// when you already have an `Ipv6Addr` from elsewhere in your program.
+pub fn country_code_v6(ip: Ipv6Addr) -> Option<&'static str> {
+    lookup_v6(ip)
 }
 
 /// Looks up ISO 3166-1 alpha-2 country codes for a sequence of addresses.
@@ -48,8 +64,11 @@ fn lookup_v4(ip: Ipv4Addr) -> Option<&'static str> {
 
 fn lookup_v6(ip: Ipv6Addr) -> Option<&'static str> {
     let key = u128::from(ip);
-    let idx = partition_point(0, V6_COUNT, |i| v6_start(i) <= key);
-    if idx == 0 {
+    let bucket = (key >> 112) as usize;
+    let lo = (read_u32(V6_BIN, bucket * 4) as usize).saturating_sub(1);
+    let hi = read_u32(V6_BIN, (bucket + 1) * 4) as usize;
+    let idx = partition_point(lo, hi, |i| v6_start(i) <= key);
+    if idx == lo {
         return None;
     }
     let i = idx - 1;
@@ -96,13 +115,13 @@ fn v4_code(i: usize) -> &'static str {
 }
 
 fn v6_start(i: usize) -> u128 {
-    read_u128(V6_BIN, i * 16)
+    read_u128(V6_BIN, FIRST_LEVEL_BYTES + i * 16)
 }
 
 fn v6_end(i: usize) -> u128 {
-    read_u128(V6_BIN, V6_COUNT * 16 + i * 16)
+    read_u128(V6_BIN, FIRST_LEVEL_BYTES + V6_COUNT * 16 + i * 16)
 }
 
 fn v6_code(i: usize) -> &'static str {
-    read_code(V6_BIN, V6_COUNT * 32 + i * 2)
+    read_code(V6_BIN, FIRST_LEVEL_BYTES + V6_COUNT * 32 + i * 2)
 }

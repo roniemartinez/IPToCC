@@ -85,19 +85,29 @@ fn main() {
     v4.sort_unstable_by_key(|t| t.0);
     v6.sort_unstable_by_key(|t| t.0);
 
-    let mut first_level: Vec<u32> = Vec::with_capacity(FIRST_LEVEL_COUNT);
+    let mut v4_first_level: Vec<u32> = Vec::with_capacity(FIRST_LEVEL_COUNT);
     let mut pos: usize = 0;
     for bucket in 0..FIRST_LEVEL_COUNT {
         let bucket_floor: u64 = (bucket as u64) << 16;
         while pos < v4.len() && (v4[pos].0 as u64) < bucket_floor {
             pos += 1;
         }
-        first_level.push(pos as u32);
+        v4_first_level.push(pos as u32);
+    }
+
+    let mut v6_first_level: Vec<u32> = Vec::with_capacity(FIRST_LEVEL_COUNT);
+    let mut pos: usize = 0;
+    for bucket in 0..FIRST_LEVEL_COUNT {
+        let bucket_floor: u128 = (bucket as u128) << 112;
+        while pos < v6.len() && v6[pos].0 < bucket_floor {
+            pos += 1;
+        }
+        v6_first_level.push(pos as u32);
     }
 
     let v4_path = out_dir.join("v4.bin");
     let mut w = fs::File::create(&v4_path).expect("creating v4.bin");
-    for &fl in &first_level {
+    for &fl in &v4_first_level {
         w.write_all(&fl.to_le_bytes()).unwrap();
     }
     for &(s, _, _) in &v4 {
@@ -112,6 +122,9 @@ fn main() {
 
     let v6_path = out_dir.join("v6.bin");
     let mut w = fs::File::create(&v6_path).expect("creating v6.bin");
+    for &fl in &v6_first_level {
+        w.write_all(&fl.to_le_bytes()).unwrap();
+    }
     for &(s, _, _) in &v6 {
         w.write_all(&s.to_le_bytes()).unwrap();
     }
