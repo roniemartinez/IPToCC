@@ -30,7 +30,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Build wheel
-        uses: PyO3/maturin-action@v1.50.1
+        uses: PyO3/maturin-action@v1.51.0
         with:
           working-directory: bindings/python
           target: ${{ matrix.platform.target }}
@@ -52,7 +52,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Build sdist
-        uses: PyO3/maturin-action@v1.50.1
+        uses: PyO3/maturin-action@v1.51.0
         with:
           working-directory: bindings/python
           command: sdist
