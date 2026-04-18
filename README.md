@@ -1,20 +1,18 @@
 # IPToCC
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+[![CI](https://img.shields.io/github/actions/workflow/status/roniemartinez/IPToCC/ci.yml?branch=master&label=CI&logo=github%20actions&style=for-the-badge)](https://github.com/roniemartinez/IPToCC/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/iptocc.svg?logo=rust&label=crates.io&style=for-the-badge)](https://crates.io/crates/iptocc)
+[![PyPI](https://img.shields.io/pypi/v/iptocc.svg?logo=pypi&logoColor=white&label=PyPI&style=for-the-badge)](https://pypi.org/project/iptocc/)
+[![npm](https://img.shields.io/npm/v/@roniemartinez/iptocc.svg?logo=npm&label=npm&style=for-the-badge)](https://www.npmjs.com/package/@roniemartinez/iptocc)
+[![Python](https://img.shields.io/pypi/pyversions/iptocc.svg?logo=python&logoColor=white&label=Python&style=for-the-badge)](https://pypi.org/project/iptocc/)
+[![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg?logo=rust&style=for-the-badge)](https://www.rust-lang.org/)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg?style=for-the-badge)](#license)
+[![All Contributors](https://img.shields.io/github/all-contributors/roniemartinez/IPToCC?label=all%20contributors&style=for-the-badge)](#contributors-)
 
 Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup. One Rust core with Python, WebAssembly, and CLI bindings.
 
 > [!IMPORTANT]
 > **iptocc 3.0 is a complete Rust rewrite.** Previous versions (2.x and earlier) were pure-Python on top of pandas. The 3.x line ships a Rust core with PyO3 Python bindings, wasm-bindgen WASM bindings, and a standalone `iptocc` crate. The Python public API stays compatible for the common case (see [Migrating from 2.x](#migrating-from-2x)).
-
-[![CI](https://github.com/roniemartinez/IPToCC/actions/workflows/ci.yml/badge.svg)](https://github.com/roniemartinez/IPToCC/actions/workflows/ci.yml)
-[![crates.io](https://img.shields.io/crates/v/iptocc.svg?logo=rust&label=crates.io)](https://crates.io/crates/iptocc)
-[![PyPI](https://img.shields.io/pypi/v/iptocc.svg?logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/iptocc/)
-[![npm](https://img.shields.io/npm/v/@roniemartinez/iptocc.svg?logo=npm&label=npm)](https://www.npmjs.com/package/@roniemartinez/iptocc)
-[![Python](https://img.shields.io/pypi/pyversions/iptocc.svg?logo=python&logoColor=white&label=Python)](https://pypi.org/project/iptocc/)
-[![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg?logo=rust)](https://www.rust-lang.org/)
-[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 
 ## Features
 
@@ -121,9 +119,9 @@ Measured on an Apple M3 Pro across the same 1,000 unique IPv4 addresses, one-sho
 |---|---:|---:|---:|
 | [ip_to_country](https://github.com/jamesdolan/ip_to_country) (`bisect` over `array.array`) | ~1.2 us | ~1.2 ms (loop; no batch API) | 1x (baseline) |
 | iptocc 2.1.2 (legacy, pandas DataFrame filter) | ~78 ms | ~78 s (loop; no batch API) | ~65,000x slower |
-| **iptocc 3.x (Rust + PyO3)** | **~80 ns** | **~45 us (batch)** | **~25x faster** |
+| **iptocc 3.x (Rust + PyO3)** | **~100 ns** | **~31 us (batch)** | **~38x faster** |
 
-So iptocc 3.x is roughly **~25x** faster than ip_to_country on a 1,000-address workload, while adding IPv6, a batch API, a CLI, and Rust/WASM bindings. (The legacy 2.1.2 row is included for historical context; its pandas-based filtering is orders of magnitude slower than any packed-binary approach.)
+So iptocc 3.x is roughly **~38x** faster than ip_to_country on a 1,000-address workload, while adding IPv6, a batch API, a CLI, and Rust/WASM bindings. (The legacy 2.1.2 row is included for historical context; its pandas-based filtering is orders of magnitude slower than any packed-binary approach.)
 
 See [BENCHMARK.md](./BENCHMARK.md) for the full per-RIR breakdown and the Rust-core / WASM numbers.
 
@@ -190,6 +188,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://ron.sh/"><img src="https://avatars.githubusercontent.com/u/2573537?v=4?s=100" width="100px;" alt="Ronie Martinez"/><br /><sub><b>Ronie Martinez</b></sub></a><br /><a href="https://github.com/roniemartinez/IPToCC/commits?author=roniemartinez" title="Code">💻</a> <a href="https://github.com/roniemartinez/IPToCC/commits?author=roniemartinez" title="Documentation">📖</a> <a href="#infra-roniemartinez" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-roniemartinez" title="Maintenance">🚧</a> <a href="https://github.com/roniemartinez/IPToCC/pulls?q=is%3Apr+reviewed-by%3Aroniemartinez" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tatemz"><img src="https://avatars.githubusercontent.com/u/2190655?v=4?s=100" width="100px;" alt="Tate Barber"/><br /><sub><b>Tate Barber</b></sub></a><br /><a href="https://github.com/roniemartinez/IPToCC/commits?author=tatemz" title="Code">💻</a> <a href="https://github.com/roniemartinez/IPToCC/commits?author=tatemz" title="Documentation">📖</a> <a href="#infra-tatemz" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mathgeek12"><img src="https://avatars.githubusercontent.com/u/36207893?v=4?s=100" width="100px;" alt="mathgeek12"/><br /><sub><b>mathgeek12</b></sub></a><br /><a href="https://github.com/roniemartinez/IPToCC/issues?q=author%3Amathgeek12" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://jamesdolan.com"><img src="https://avatars.githubusercontent.com/u/7540221?v=4?s=100" width="100px;" alt="James Dolan"/><br /><sub><b>James Dolan</b></sub></a><br /><a href="#ideas-jamesdolan" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
