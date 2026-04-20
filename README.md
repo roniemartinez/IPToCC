@@ -142,8 +142,6 @@ from iptocc import country_code
 cc = country_code("8.8.8.8")  # returns None on miss, no exception
 ```
 
-The `get_country(ip)` full-name lookup is not currently provided; if you need this, open an issue.
-
 ## Data sources
 
 Lookups are based on the delegated extended statistics published by the five Regional Internet Registries:
