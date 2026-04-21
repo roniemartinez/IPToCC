@@ -41,9 +41,7 @@ fn bench_v4_typed(c: &mut Criterion) {
     let mut group = c.benchmark_group("v4_typed");
     for (name, ip) in V4_CASES {
         let parsed: Ipv4Addr = ip.parse().unwrap();
-        group.bench_with_input(*name, &parsed, |b, &ip| {
-            b.iter(|| iptocc::country_code_v4(black_box(ip)))
-        });
+        group.bench_with_input(*name, &parsed, |b, &ip| b.iter(|| iptocc::country_code(black_box(ip))));
     }
     group.finish();
 }
@@ -52,9 +50,7 @@ fn bench_v6_typed(c: &mut Criterion) {
     let mut group = c.benchmark_group("v6_typed");
     for (name, ip) in V6_CASES {
         let parsed: Ipv6Addr = ip.parse().unwrap();
-        group.bench_with_input(*name, &parsed, |b, &ip| {
-            b.iter(|| iptocc::country_code_v6(black_box(ip)))
-        });
+        group.bench_with_input(*name, &parsed, |b, &ip| b.iter(|| iptocc::country_code(black_box(ip))));
     }
     group.finish();
 }
