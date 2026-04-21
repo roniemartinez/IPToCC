@@ -9,12 +9,14 @@ use iptocc::format::{FIRST_LEVEL_COUNT, V4_GAP_SENTINEL, V6_BUCKET_COUNT, V6_BUC
 
 const RIRS: &[&str] = &["afrinic", "apnic", "arin", "lacnic", "ripencc"];
 
+#[derive(Clone, Copy)]
 struct V4Interval {
     start: u32,
     end: u32,
     cc: [u8; 2],
 }
 
+#[derive(Clone, Copy)]
 struct V6Interval {
     start: u128,
     end: u128,
@@ -146,32 +148,43 @@ fn parse_rir(data_dir: &Path) -> (Vec<V4Interval>, Vec<V6Interval>) {
     (v4, v6)
 }
 
-// Sorts by start and resolves any overlaps by dropping or clipping earlier
-// intervals so the later one (in RIR iteration order, via stable sort) wins.
-// RIR data occasionally publishes duplicate or conflicting allocations when a
-// block is transferred between registries; the format requires disjoint
-// intervals, so we pick a deterministic winner rather than error out.
 fn resolve_v4_overlaps(mut intervals: Vec<V4Interval>) -> Vec<V4Interval> {
     intervals.sort_by_key(|t| t.start);
     let mut out: Vec<V4Interval> = Vec::with_capacity(intervals.len());
     for entry in intervals {
-        while let Some(last) = out.last_mut() {
+        let mut handled = false;
+        while let Some(&last) = out.last() {
             if last.end < entry.start {
                 break;
             }
-            if last.start >= entry.start {
-                out.pop();
-            } else {
-                let clipped = entry.start - 1;
-                if clipped < last.start {
-                    out.pop();
-                } else {
-                    last.end = clipped;
-                    break;
+            if last.start < entry.start {
+                out.last_mut().unwrap().end = entry.start - 1;
+                if last.end > entry.end {
+                    out.push(entry);
+                    out.push(V4Interval {
+                        start: entry.end + 1,
+                        end: last.end,
+                        cc: last.cc,
+                    });
+                    handled = true;
                 }
+                break;
+            }
+            out.pop();
+            if last.end > entry.end {
+                out.push(entry);
+                out.push(V4Interval {
+                    start: entry.end + 1,
+                    end: last.end,
+                    cc: last.cc,
+                });
+                handled = true;
+                break;
             }
         }
-        out.push(entry);
+        if !handled {
+            out.push(entry);
+        }
     }
     out
 }
@@ -180,23 +193,39 @@ fn resolve_v6_overlaps(mut intervals: Vec<V6Interval>) -> Vec<V6Interval> {
     intervals.sort_by_key(|t| t.start);
     let mut out: Vec<V6Interval> = Vec::with_capacity(intervals.len());
     for entry in intervals {
-        while let Some(last) = out.last_mut() {
+        let mut handled = false;
+        while let Some(&last) = out.last() {
             if last.end < entry.start {
                 break;
             }
-            if last.start >= entry.start {
-                out.pop();
-            } else {
-                let clipped = entry.start - 1;
-                if clipped < last.start {
-                    out.pop();
-                } else {
-                    last.end = clipped;
-                    break;
+            if last.start < entry.start {
+                out.last_mut().unwrap().end = entry.start - 1;
+                if last.end > entry.end {
+                    out.push(entry);
+                    out.push(V6Interval {
+                        start: entry.end + 1,
+                        end: last.end,
+                        cc: last.cc,
+                    });
+                    handled = true;
                 }
+                break;
+            }
+            out.pop();
+            if last.end > entry.end {
+                out.push(entry);
+                out.push(V6Interval {
+                    start: entry.end + 1,
+                    end: last.end,
+                    cc: last.cc,
+                });
+                handled = true;
+                break;
             }
         }
-        out.push(entry);
+        if !handled {
+            out.push(entry);
+        }
     }
     out
 }
