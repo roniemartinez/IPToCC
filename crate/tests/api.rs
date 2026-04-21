@@ -47,7 +47,7 @@ fn batch_accepts_vec_of_string() {
 #[case::ripencc(Ipv4Addr::new(217, 0, 0, 1), Some("DE"))]
 #[case::link_local(Ipv4Addr::new(169, 254, 1, 1), None)]
 fn country_code_v4_typed(#[case] ip: Ipv4Addr, #[case] expected: Option<&str>) {
-    assert_eq!(iptocc::country_code_v4(ip), expected);
+    assert_eq!(iptocc::country_code(ip), expected);
 }
 
 #[rstest]
@@ -59,5 +59,5 @@ fn country_code_v4_typed(#[case] ip: Ipv4Addr, #[case] expected: Option<&str>) {
 #[case::documentation("2001:db8::1", None)]
 fn country_code_v6_typed(#[case] addr: &str, #[case] expected: Option<&str>) {
     let ip: Ipv6Addr = addr.parse().unwrap();
-    assert_eq!(iptocc::country_code_v6(ip), expected);
+    assert_eq!(iptocc::country_code(ip), expected);
 }

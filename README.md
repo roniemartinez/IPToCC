@@ -119,9 +119,9 @@ Measured on an Apple M3 Pro across the same 1,000 unique IPv4 addresses, one-sho
 |---|---:|---:|---:|
 | [ip_to_country](https://github.com/jamesdolan/ip_to_country) (`bisect` over `array.array`) | ~1.2 us | ~1.2 ms (loop; no batch API) | 1x (baseline) |
 | iptocc 2.1.2 (legacy, pandas DataFrame filter) | ~78 ms | ~78 s (loop; no batch API) | ~65,000x slower |
-| **iptocc 3.x (Rust + PyO3)** | **~100 ns** | **~31 us (batch)** | **~38x faster** |
+| **iptocc 3.x (Rust + PyO3)** | **~100 ns** | **~28 us (batch)** | **~42x faster** |
 
-So iptocc 3.x is roughly **~38x** faster than ip_to_country on a 1,000-address workload, while adding IPv6, a batch API, a CLI, and Rust/WASM bindings. (The legacy 2.1.2 row is included for historical context; its pandas-based filtering is orders of magnitude slower than any packed-binary approach.)
+So iptocc 3.x is roughly **~42x** faster than ip_to_country on a 1,000-address workload, while adding IPv6, a batch API, a CLI, and Rust/WASM bindings. (The legacy 2.1.2 row is included for historical context; its pandas-based filtering is orders of magnitude slower than any packed-binary approach.)
 
 See [BENCHMARK.md](./BENCHMARK.md) for the full per-RIR breakdown and the Rust-core / WASM numbers.
 

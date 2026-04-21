@@ -73,6 +73,21 @@ tasks:
     cmds:
       - node --test bindings/wasm/tests/api.test.js
 
+  data:fetch:
+    desc: Refresh data/delegated-*-extended-latest from the five RIRs.
+    cmds:
+      - mkdir -p data
+      - curl -sSfL --retry 3 --retry-delay 5 -o data/delegated-afrinic-extended-latest https://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest
+      - curl -sSfL --retry 3 --retry-delay 5 -o data/delegated-apnic-extended-latest   https://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest
+      - curl -sSfL --retry 3 --retry-delay 5 -o data/delegated-arin-extended-latest    https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest
+      - curl -sSfL --retry 3 --retry-delay 5 -o data/delegated-lacnic-extended-latest  https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest
+      - curl -sSfL --retry 3 --retry-delay 5 -o data/delegated-ripencc-extended-latest https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest
+
+  data:generate:
+    desc: Regenerate crate/src/data/v4.bin and v6.bin from data/delegated-*-extended-latest.
+    cmds:
+      - cargo run -q -p iptocc --bin generate-data
+
   tag:
     desc: Create release tags (e.g. `task tag -- python`). See scripts/tag.py --help.
     cmds:
