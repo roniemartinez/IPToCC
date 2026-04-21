@@ -28,13 +28,21 @@ fn main() {
     let out_dir = Path::new(manifest_dir).join("src/data");
     fs::create_dir_all(&out_dir).expect("creating src/data");
 
-    let (mut v4, mut v6) = parse_rir(&data_dir);
+    let (v4, v6) = parse_rir(&data_dir);
+    let mut v4 = resolve_v4_overlaps(v4);
+    let mut v6 = resolve_v6_overlaps(v6);
 
     v4.sort_unstable_by_key(|t| t.start);
     v6.sort_unstable_by_key(|t| t.start);
 
-    assert!(v4.windows(2).all(|w| w[0].end < w[1].start), "v4 intervals overlap");
-    assert!(v6.windows(2).all(|w| w[0].end < w[1].start), "v6 intervals overlap");
+    assert!(
+        v4.windows(2).all(|w| w[0].end < w[1].start),
+        "v4 intervals still overlap after resolution"
+    );
+    assert!(
+        v6.windows(2).all(|w| w[0].end < w[1].start),
+        "v6 intervals still overlap after resolution"
+    );
 
     for entry in v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)) {
         assert!(
@@ -136,6 +144,61 @@ fn parse_rir(data_dir: &Path) -> (Vec<V4Interval>, Vec<V6Interval>) {
         }
     }
     (v4, v6)
+}
+
+// Sorts by start and resolves any overlaps by dropping or clipping earlier
+// intervals so the later one (in RIR iteration order, via stable sort) wins.
+// RIR data occasionally publishes duplicate or conflicting allocations when a
+// block is transferred between registries; the format requires disjoint
+// intervals, so we pick a deterministic winner rather than error out.
+fn resolve_v4_overlaps(mut intervals: Vec<V4Interval>) -> Vec<V4Interval> {
+    intervals.sort_by_key(|t| t.start);
+    let mut out: Vec<V4Interval> = Vec::with_capacity(intervals.len());
+    for entry in intervals {
+        while let Some(last) = out.last_mut() {
+            if last.end < entry.start {
+                break;
+            }
+            if last.start >= entry.start {
+                out.pop();
+            } else {
+                let clipped = entry.start - 1;
+                if clipped < last.start {
+                    out.pop();
+                } else {
+                    last.end = clipped;
+                    break;
+                }
+            }
+        }
+        out.push(entry);
+    }
+    out
+}
+
+fn resolve_v6_overlaps(mut intervals: Vec<V6Interval>) -> Vec<V6Interval> {
+    intervals.sort_by_key(|t| t.start);
+    let mut out: Vec<V6Interval> = Vec::with_capacity(intervals.len());
+    for entry in intervals {
+        while let Some(last) = out.last_mut() {
+            if last.end < entry.start {
+                break;
+            }
+            if last.start >= entry.start {
+                out.pop();
+            } else {
+                let clipped = entry.start - 1;
+                if clipped < last.start {
+                    out.pop();
+                } else {
+                    last.end = clipped;
+                    break;
+                }
+            }
+        }
+        out.push(entry);
+    }
+    out
 }
 
 fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
