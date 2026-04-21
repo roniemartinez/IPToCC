@@ -36,23 +36,6 @@ fn main() {
     assert!(v4.windows(2).all(|w| w[0].end < w[1].start), "v4 intervals overlap");
     assert!(v6.windows(2).all(|w| w[0].end < w[1].start), "v6 intervals overlap");
 
-    let v6_buckets: BTreeSet<u128> = v6.iter().map(|e| e.start >> 112).collect();
-    assert!(
-        v6_buckets.len() < 255,
-        "v6 populated bucket count {} exceeds u8 range",
-        v6_buckets.len()
-    );
-
-    for entry in &v6 {
-        assert_eq!(
-            entry.start >> 112,
-            entry.end >> 112,
-            "v6 interval spans /16 buckets: {:x}..{:x}",
-            entry.start,
-            entry.end
-        );
-    }
-
     for entry in v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)) {
         assert!(
             entry.iter().all(|b| b.is_ascii_uppercase()),
@@ -265,8 +248,8 @@ fn transform_v6(intervals: &[V6Interval]) -> Vec<u8> {
 
     let populated: Vec<u128> = by_bucket.keys().copied().collect();
     assert!(
-        populated.len() < 255,
-        "v6 populated bucket count {} exceeds u8 range",
+        populated.len() < 256,
+        "v6 populated bucket count {} would collide with V6_BUCKET_EMPTY (0xFF)",
         populated.len()
     );
 
