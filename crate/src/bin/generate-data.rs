@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::fs;
 use std::net::{Ipv4Addr, Ipv6Addr};
+use std::ops::{Add, Sub};
 use std::path::Path;
 use std::str::FromStr;
 
@@ -9,16 +10,68 @@ use iptocc::format::{FIRST_LEVEL_COUNT, V4_GAP_SENTINEL, V6_BUCKET_COUNT, V6_BUC
 
 const RIRS: &[&str] = &["afrinic", "apnic", "arin", "lacnic", "ripencc"];
 
+trait Interval: Copy {
+    type Addr: Copy + Ord + Add<Output = Self::Addr> + Sub<Output = Self::Addr>;
+    const ONE: Self::Addr;
+    fn start(&self) -> Self::Addr;
+    fn end(&self) -> Self::Addr;
+    fn cc(&self) -> [u8; 2];
+    fn new(start: Self::Addr, end: Self::Addr, cc: [u8; 2]) -> Self;
+    fn set_end(&mut self, end: Self::Addr);
+}
+
+#[derive(Clone, Copy)]
 struct V4Interval {
     start: u32,
     end: u32,
     cc: [u8; 2],
 }
 
+#[derive(Clone, Copy)]
 struct V6Interval {
     start: u128,
     end: u128,
     cc: [u8; 2],
+}
+
+impl Interval for V4Interval {
+    type Addr = u32;
+    const ONE: u32 = 1;
+    fn start(&self) -> u32 {
+        self.start
+    }
+    fn end(&self) -> u32 {
+        self.end
+    }
+    fn cc(&self) -> [u8; 2] {
+        self.cc
+    }
+    fn new(start: u32, end: u32, cc: [u8; 2]) -> Self {
+        V4Interval { start, end, cc }
+    }
+    fn set_end(&mut self, end: u32) {
+        self.end = end;
+    }
+}
+
+impl Interval for V6Interval {
+    type Addr = u128;
+    const ONE: u128 = 1;
+    fn start(&self) -> u128 {
+        self.start
+    }
+    fn end(&self) -> u128 {
+        self.end
+    }
+    fn cc(&self) -> [u8; 2] {
+        self.cc
+    }
+    fn new(start: u128, end: u128, cc: [u8; 2]) -> Self {
+        V6Interval { start, end, cc }
+    }
+    fn set_end(&mut self, end: u128) {
+        self.end = end;
+    }
 }
 
 fn main() {
@@ -28,13 +81,21 @@ fn main() {
     let out_dir = Path::new(manifest_dir).join("src/data");
     fs::create_dir_all(&out_dir).expect("creating src/data");
 
-    let (mut v4, mut v6) = parse_rir(&data_dir);
+    let (v4, v6) = parse_rir(&data_dir);
+    let mut v4 = resolve_overlaps(v4);
+    let mut v6 = resolve_overlaps(v6);
 
     v4.sort_unstable_by_key(|t| t.start);
     v6.sort_unstable_by_key(|t| t.start);
 
-    assert!(v4.windows(2).all(|w| w[0].end < w[1].start), "v4 intervals overlap");
-    assert!(v6.windows(2).all(|w| w[0].end < w[1].start), "v6 intervals overlap");
+    assert!(
+        v4.windows(2).all(|w| w[0].end < w[1].start),
+        "v4 intervals still overlap after resolution"
+    );
+    assert!(
+        v6.windows(2).all(|w| w[0].end < w[1].start),
+        "v6 intervals still overlap after resolution"
+    );
 
     for entry in v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)) {
         assert!(
@@ -136,6 +197,32 @@ fn parse_rir(data_dir: &Path) -> (Vec<V4Interval>, Vec<V6Interval>) {
         }
     }
     (v4, v6)
+}
+
+fn resolve_overlaps<I: Interval>(mut intervals: Vec<I>) -> Vec<I> {
+    intervals.sort_by_key(|t| t.start());
+    let mut out: Vec<I> = Vec::with_capacity(intervals.len());
+    for entry in intervals {
+        let mut tail: Option<I> = None;
+        while let Some(&last) = out.last() {
+            if last.end() < entry.start() {
+                break;
+            }
+            if last.end() > entry.end() && tail.is_none() {
+                tail = Some(I::new(entry.end() + I::ONE, last.end(), last.cc()));
+            }
+            if last.start() < entry.start() {
+                out.last_mut().unwrap().set_end(entry.start() - I::ONE);
+                break;
+            }
+            out.pop();
+        }
+        out.push(entry);
+        if let Some(t) = tail {
+            out.push(t);
+        }
+    }
+    out
 }
 
 fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
