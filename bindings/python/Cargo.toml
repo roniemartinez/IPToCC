@@ -1,7 +1,7 @@
 [package]
 name = "iptocc-py"
 description = "Python bindings for iptocc, a fast IP-to-country lookup library written in Rust"
-version = "3.2.1"
+version = "3.2.2"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
