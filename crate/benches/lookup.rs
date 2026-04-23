@@ -1,6 +1,6 @@
 use core::net::{Ipv4Addr, Ipv6Addr};
 
-use criterion::{Criterion, criterion_group, criterion_main};
+use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use std::hint::black_box;
 
 const V4_CASES: &[(&str, &str)] = &[
@@ -55,5 +55,73 @@ fn bench_v6_typed(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_v4, bench_v6, bench_v4_typed, bench_v6_typed);
+fn bench_batch_v4(c: &mut Criterion) {
+    let mut group = c.benchmark_group("batch_v4");
+    for &n in &[10usize, 100, 1000, 10000] {
+        let addrs: Vec<&str> = V4_CASES.iter().map(|(_, ip)| *ip).cycle().take(n).collect();
+        group.throughput(Throughput::Elements(n as u64));
+        group.bench_with_input(format!("n={n}"), &addrs, |b, addrs| {
+            b.iter(|| iptocc::country_codes(black_box(addrs.iter().copied())))
+        });
+    }
+    group.finish();
+}
+
+fn bench_batch_v4_typed(c: &mut Criterion) {
+    let mut group = c.benchmark_group("batch_v4_typed");
+    for &n in &[10usize, 100, 1000, 10000] {
+        let addrs: Vec<Ipv4Addr> = V4_CASES
+            .iter()
+            .map(|(_, ip)| ip.parse().unwrap())
+            .cycle()
+            .take(n)
+            .collect();
+        group.throughput(Throughput::Elements(n as u64));
+        group.bench_with_input(format!("n={n}"), &addrs, |b, addrs| {
+            b.iter(|| iptocc::country_codes(black_box(addrs.iter().copied())))
+        });
+    }
+    group.finish();
+}
+
+fn bench_batch_v6(c: &mut Criterion) {
+    let mut group = c.benchmark_group("batch_v6");
+    for &n in &[10usize, 100, 1000, 10000] {
+        let addrs: Vec<&str> = V6_CASES.iter().map(|(_, ip)| *ip).cycle().take(n).collect();
+        group.throughput(Throughput::Elements(n as u64));
+        group.bench_with_input(format!("n={n}"), &addrs, |b, addrs| {
+            b.iter(|| iptocc::country_codes(black_box(addrs.iter().copied())))
+        });
+    }
+    group.finish();
+}
+
+fn bench_batch_v6_typed(c: &mut Criterion) {
+    let mut group = c.benchmark_group("batch_v6_typed");
+    for &n in &[10usize, 100, 1000, 10000] {
+        let addrs: Vec<Ipv6Addr> = V6_CASES
+            .iter()
+            .map(|(_, ip)| ip.parse().unwrap())
+            .cycle()
+            .take(n)
+            .collect();
+        group.throughput(Throughput::Elements(n as u64));
+        group.bench_with_input(format!("n={n}"), &addrs, |b, addrs| {
+            b.iter(|| iptocc::country_codes(black_box(addrs.iter().copied())))
+        });
+    }
+    group.finish();
+}
+
+criterion_group!(
+    benches,
+    bench_v4,
+    bench_v6,
+    bench_v4_typed,
+    bench_v6_typed,
+    bench_batch_v4,
+    bench_batch_v4_typed,
+    bench_batch_v6,
+    bench_batch_v6_typed
+);
 criterion_main!(benches);

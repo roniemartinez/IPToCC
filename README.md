@@ -6,23 +6,26 @@
 [![npm](https://img.shields.io/npm/v/@roniemartinez/iptocc.svg?logo=npm&label=npm&style=for-the-badge)](https://www.npmjs.com/package/@roniemartinez/iptocc)
 [![Python](https://img.shields.io/pypi/pyversions/iptocc.svg?logo=python&logoColor=white&label=Python&style=for-the-badge)](https://pypi.org/project/iptocc/)
 [![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg?logo=rust&style=for-the-badge)](https://www.rust-lang.org/)
-[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg?style=for-the-badge)](#license)
+![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg?style=for-the-badge)
 [![All Contributors](https://img.shields.io/github/all-contributors/roniemartinez/IPToCC?label=all%20contributors&style=for-the-badge)](#contributors-)
 
-Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup. One Rust core with Python, WebAssembly, and CLI bindings.
+Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup. One Rust core with Python and WASM bindings, plus a CLI.
 
 > [!IMPORTANT]
-> **iptocc 3.0 is a complete Rust rewrite.** Previous versions (2.x and earlier) were pure-Python on top of pandas. The 3.x line ships a Rust core with PyO3 Python bindings, wasm-bindgen WASM bindings, and a standalone `iptocc` crate. The Python public API stays compatible for the common case (see [Migrating from 2.x](#migrating-from-2x)).
+> **iptocc 3.0 is a complete Rust rewrite.** Versions 2.x and earlier were pure Python on top of pandas. 3.x is a standalone Rust crate with Python and WASM bindings. The Python public API stays compatible for most uses (see [Migrating from 2.x](#migrating-from-2x)).
+
+> [!NOTE]
+> Country codes reflect the country **assigned** by a **Regional Internet Registry (RIR)** to each IP block, not where the block is being used. RIR data agrees with MaxMind for **~95%** of IPv4 addresses and has minimal discrepancies for IPv6 ([Zander, 2012](https://figshare.swinburne.edu.au/articles/report/On_the_accuracy_of_IP_geolocation_based_on_IP_allocation_data/26254751)).
 
 ## Features
 
 - Offline lookup, no external API calls.
 - IPv4 and IPv6 in a single call.
 - Accepts a single address or a batch of addresses.
-- Lookup data embedded in the binary; no runtime file I/O after startup.
-- Sub-microsecond per-call latency on native Rust; low hundreds of nanoseconds through Python or WebAssembly.
-- `iptocc` CLI installed by all three ecosystems.
-- Database refreshed nightly from the five Regional Internet Registries.
+- Lookup data embedded in the binary; no runtime file I/O.
+- ~1-13 ns on native Rust (typed input); ~44-141 ns through Python, ~200-300 ns through WASM.
+- `iptocc` CLI installed via `pip`, `cargo`, or `npm`.
+- Data refreshed nightly from the five Regional Internet Registries.
 
 ## Install
 
@@ -35,7 +38,8 @@ pip install iptocc
 ### Rust
 
 ```bash
-cargo add iptocc
+cargo add iptocc         # library
+cargo install iptocc     # CLI binary
 ```
 
 ### Node, browser, Deno, bundlers
@@ -95,33 +99,36 @@ $ iptocc 8.8.8.8 1.0.16.1 10.0.0.0 193.0.6.139
 193.0.6.139 NL
 ```
 
-## Comparison with other Python IP-to-country libraries
+## Comparison with ip_to_country
+
+Compared below against [ip_to_country](https://github.com/jamesdolan/ip_to_country) and the legacy iptocc 2.x line.
 
 ### Features
 
-| Feature | iptocc 2.x (legacy) | [ip_to_country](https://github.com/jamesdolan/ip_to_country) | iptocc 3.x (this) |
-|---|:-:|:-:|:-:|
-| IPv4 | ✅ | ✅ | ✅ |
-| IPv6 | ✅ |    | ✅ |
-| Offline lookup | ✅ | ✅ | ✅ |
-| Batch API |    |    | ✅ |
-| CLI |    |    | ✅ |
-| Python | ✅ | ✅ | ✅ |
-| Rust |    |    | ✅ |
-| WASM |    |    | ✅ |
-| Nightly data refresh |    | ✅ | ✅ |
+| Feature              | iptocc 2.x (legacy) | ip_to_country | iptocc 3.x |
+|----------------------|:-------------------:|:-------------:|:----------:|
+| IPv4                 |          ✅          |       ✅       |     ✅      |
+| IPv6                 |          ✅          |       ❌       |     ✅      |
+| Offline lookup       |          ✅          |       ✅       |     ✅      |
+| Batch API            |          ❌          |       ❌       |     ✅      |
+| CLI                  |          ❌          |       ❌       |     ✅      |
+| Python               |          ✅          |       ✅       |     ✅      |
+| Rust                 |          ❌          |       ❌       |     ✅      |
+| WASM                 |          ❌          |       ❌       |     ✅      |
+| Nightly data refresh |          ❌          |       ✅       |     ✅      |
 
-### Performance (Python)
+### Performance
 
-Measured on an Apple M3 Pro across the same 1,000 unique IPv4 addresses, one-shot wall-clock timing via `time.perf_counter()`. Lookup-only; one-time data load is excluded. Lower is better.
+Apple M3 Pro, per-call latency on a single v4 hit. `time.perf_counter()` for Python, Criterion for the Rust core.
 
-| Library | 1 lookup | 1,000 lookups (total) | Relative to ip_to_country |
-|---|---:|---:|---:|
-| [ip_to_country](https://github.com/jamesdolan/ip_to_country) (`bisect` over `array.array`) | ~1.2 us | ~1.2 ms (loop; no batch API) | 1x (baseline) |
-| iptocc 2.1.2 (legacy, pandas DataFrame filter) | ~78 ms | ~78 s (loop; no batch API) | ~65,000x slower |
-| **iptocc 3.x (Rust + PyO3)** | **~100 ns** | **~28 us (batch)** | **~42x faster** |
+| Library                              |    1 lookup |      vs baseline |
+|--------------------------------------|------------:|-----------------:|
+| ip_to_country (Python bisect)        |     ~1.2 us |               1x |
+| iptocc 2.1.2 (legacy, pandas filter) |      ~78 ms |  ~65,000x slower |
+| **iptocc 3.x Python**                | **~100 ns** |  **~12x faster** |
+| **iptocc Rust**                      | **~1.3 ns** | **~900x faster** |
 
-So iptocc 3.x is roughly **~42x** faster than ip_to_country on a 1,000-address workload, while adding IPv6, a batch API, a CLI, and Rust/WASM bindings. (The legacy 2.1.2 row is included for historical context; its pandas-based filtering is orders of magnitude slower than any packed-binary approach.)
+The 2.1.2 row is for historical context. The Python binding gets most of the way to the Rust core's speed; the remaining gap is per-call FFI overhead.
 
 See [BENCHMARK.md](./BENCHMARK.md) for the full per-RIR breakdown and the Rust-core / WASM numbers.
 
@@ -146,35 +153,20 @@ cc = country_code("8.8.8.8")  # returns None on miss, no exception
 
 Lookups are based on the delegated extended statistics published by the five Regional Internet Registries:
 
-- AFRINIC: `https://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest`
-- ARIN: `https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest`
-- APNIC: `https://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest`
-- LACNIC: `https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest`
-- RIPE NCC: `https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest`
+| RIR      | URL                                                                              |
+|----------|----------------------------------------------------------------------------------|
+| AFRINIC  | `https://ftp.afrinic.net/stats/afrinic/delegated-afrinic-extended-latest`        |
+| ARIN     | `https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest`             |
+| APNIC    | `https://ftp.apnic.net/public/apnic/stats/apnic/delegated-apnic-extended-latest` |
+| LACNIC   | `https://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest`       |
+| RIPE NCC | `https://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest`       |
 
-A nightly GitHub Action refreshes these files, regenerates the embedded lookup tables, bumps the package versions, and publishes new releases automatically.
-
-## Development
-
-Common dev tasks are exposed via [Taskfile](https://taskfile.dev):
-
-```bash
-task test          # run Rust, Python, and WASM tests
-task bench         # run benchmarks across all three runtimes
-task build:python  # rebuild the pyo3 extension
-task build:wasm    # rebuild the wasm-pack nodejs bundle
-```
-
-See [BENCHMARK.md](./BENCHMARK.md) for performance numbers and how to reproduce them.
+A nightly GitHub Action fetches fresh data, rebuilds the lookup tables, and publishes new releases automatically.
 
 ## References
 
 - [RIR Statistics Exchange Format](https://www.apnic.net/about-apnic/corporate-documents/documents/resource-guidelines/rir-statistics-exchange-format/)
 - [ISO 3166-1 alpha-2 country codes (Wikipedia)](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-
-## License
-
-Licensed under either of [Apache License, Version 2.0](./LICENSE-APACHE) or [MIT license](./LICENSE-MIT) at your option.
 
 ## Contributors ✨
 

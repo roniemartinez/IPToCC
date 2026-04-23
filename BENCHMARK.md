@@ -14,25 +14,25 @@ Per-call latency for `country_code(address)`, one well-known IP per RIR plus one
 
 String input via `country_code(&str)`:
 
-| Case                                       |    IPv4 |    IPv6 |
-| ------------------------------------------ | ------: | ------: |
-| AFRINIC `41.0.0.1` / `2001:4200::1`        |  6.4 ns | 37.6 ns |
-| APNIC `1.0.16.1` / `2001:200::1`           |  8.8 ns | 39.6 ns |
-| ARIN `8.8.8.8` / `2001:4860:4860::8888`    |  6.2 ns | 46.6 ns |
-| LACNIC `200.160.0.1` / `2001:1280::1`      |  7.2 ns | 36.7 ns |
-| RIPE NCC `193.0.6.139` / `2001:67c:18::1` | 12.6 ns | 63.8 ns |
-| miss `10.0.0.0` / `::1`                    |  6.4 ns | 16.5 ns |
+| Case                                        |    IPv4 |    IPv6 |
+| ------------------------------------------- | ------: | ------: |
+| AFRINIC `41.0.0.1` / `2001:4200::1`         |  5.7 ns | 39.4 ns |
+| APNIC `1.0.16.1` / `2001:200::1`            |  8.4 ns | 39.0 ns |
+| ARIN `8.8.8.8` / `2001:4860:4860::8888`     |  5.6 ns | 50.8 ns |
+| LACNIC `200.160.0.1` / `2001:1280::1`       |  6.6 ns | 39.3 ns |
+| RIPE NCC `193.0.6.139` / `2001:67c:18::1`   |  7.5 ns | 50.5 ns |
+| miss `10.0.0.0` / `::1`                     |  5.6 ns | 16.1 ns |
 
 Typed input via `country_code(Ipv4Addr)` / `country_code(Ipv6Addr)`:
 
 | Case     |   IPv4 |    IPv6 |
 | -------- | -----: | ------: |
-| AFRINIC  | 1.9 ns |  8.2 ns |
-| APNIC    | 5.2 ns |  8.5 ns |
-| ARIN     | 1.9 ns |  8.2 ns |
-| LACNIC   | 1.9 ns |  8.3 ns |
-| RIPE NCC | 8.9 ns | 25.8 ns |
-| miss     | 1.9 ns |  1.1 ns |
+| AFRINIC  | 1.3 ns |  9.9 ns |
+| APNIC    | 3.7 ns |  9.3 ns |
+| ARIN     | 1.4 ns |  9.9 ns |
+| LACNIC   | 1.3 ns |  9.9 ns |
+| RIPE NCC | 2.1 ns | 13.3 ns |
+| miss     | 1.1 ns |  1.1 ns |
 
 ```bash
 task bench:rust
@@ -44,21 +44,21 @@ Single-call latency:
 
 | Case     |     IPv4 |     IPv6 |
 | -------- | -------: | -------: |
-| AFRINIC  | 102.3 ns | 131.2 ns |
-| APNIC    | 108.7 ns | 164.4 ns |
-| ARIN     | 100.2 ns | 110.6 ns |
-| LACNIC   | 101.9 ns | 150.7 ns |
-| RIPE NCC | 112.0 ns | 169.5 ns |
-| miss     |  41.5 ns |  48.4 ns |
+| AFRINIC  |  84.6 ns | 134.4 ns |
+| APNIC    |  99.3 ns | 133.3 ns |
+| ARIN     |  44.0 ns |  95.5 ns |
+| LACNIC   |  92.8 ns |  89.6 ns |
+| RIPE NCC |  98.6 ns | 140.9 ns |
+| miss     |  35.3 ns |  45.8 ns |
 
 Batch call, `country_code(list_of_N)`:
 
 |      N |    Total | Per address |
 | -----: | -------: | ----------: |
-|     10 |   423 ns |     42.3 ns |
-|    100 |  3.81 us |     38.1 ns |
-|  1,000 |  28.3 us |     28.3 ns |
-| 10,000 | 298.6 us |     29.9 ns |
+|     10 |   367 ns |     36.7 ns |
+|    100 |  2.47 us |     24.7 ns |
+|  1,000 |  23.8 us |     23.8 ns |
+| 10,000 | 251.5 us |     25.1 ns |
 
 ```bash
 task bench:python
@@ -68,12 +68,12 @@ task bench:python
 
 | Case     |     IPv4 |     IPv6 |
 | -------- | -------: | -------: |
-| AFRINIC  | 246.0 ns | 273.3 ns |
-| APNIC    | 210.2 ns | 273.2 ns |
-| ARIN     | 202.9 ns | 297.0 ns |
-| LACNIC   | 210.2 ns | 270.2 ns |
-| RIPE NCC | 220.5 ns | 315.4 ns |
-| miss     | 114.0 ns | 122.2 ns |
+| AFRINIC  | 187.4 ns | 272.2 ns |
+| APNIC    | 197.7 ns | 270.6 ns |
+| ARIN     | 184.2 ns | 297.1 ns |
+| LACNIC   | 192.2 ns | 272.3 ns |
+| RIPE NCC | 197.7 ns | 295.0 ns |
+| miss     | 103.2 ns | 119.4 ns |
 
 ```bash
 task bench:wasm
