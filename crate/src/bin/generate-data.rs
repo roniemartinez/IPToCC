@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::env;
 use std::fs;
 use std::net::{Ipv4Addr, Ipv6Addr};
@@ -7,11 +7,11 @@ use std::path::Path;
 use std::str::FromStr;
 
 use iptocc::format::{
-    TAG_EMPTY, TAG_MIXED, TAG_PURE, V4_CC_GAP, V6_BUCKET_COUNT, V6_BUCKET_EMPTY, V6_IRREGULAR, V6_REC_SIZE,
-    V6_SIDE_SIZE, V6_SUB_INDEX_LEN,
+    BUCKET_COUNT, TAG_EMPTY, TAG_MIXED, TAG_PURE, UNASSIGNED, V4_DEEP_TOP4_LEN, V4_DENSE_THRESHOLD, V6_BYTE_INDEX_LEN,
+    V6_DENSE_THRESHOLD, V6_IRREGULAR, V6_REC_SIZE, V6_SIDE_SIZE,
 };
 
-const RIRS: &[&str] = &["afrinic", "apnic", "arin", "lacnic", "ripencc"];
+const REGISTRIES: &[&str] = &["afrinic", "apnic", "arin", "lacnic", "ripencc"];
 
 trait Interval: Copy {
     type Addr: Copy + Ord + Add<Output = Self::Addr> + Sub<Output = Self::Addr>;
@@ -77,6 +77,28 @@ impl Interval for V6Interval {
     }
 }
 
+struct MixedBucket {
+    bucket: usize,
+    initial_cc: u8,
+    transitions: Vec<(u16, u8)>,
+}
+
+struct MixedLayout {
+    mixed_base: Vec<u32>,
+    mixed_initial: Vec<u8>,
+    transitions: Vec<(u16, u8)>,
+    deep_v4: Vec<u16>,
+    dense_count: u32,
+}
+
+struct V6DeepLayout {
+    sub_index: Vec<u16>,
+    dense_keys: Vec<u16>,
+    deep_pairs: Vec<u16>,
+    dense2_keys: Vec<u16>,
+    deep2_pairs: Vec<u16>,
+}
+
 fn main() {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
     let workspace_root = Path::new(manifest_dir).parent().expect("workspace root");
@@ -85,34 +107,18 @@ fn main() {
     fs::create_dir_all(&out_dir).expect("creating src/data");
 
     let (v4, v6) = parse_rir(&data_dir);
-    let mut v4 = resolve_overlaps(v4);
-    let mut v6 = resolve_overlaps(v6);
-
-    v4.sort_unstable_by_key(|t| t.start);
-    v6.sort_unstable_by_key(|t| t.start);
-
-    assert!(
-        v4.windows(2).all(|w| w[0].end < w[1].start),
-        "v4 intervals still overlap after resolution"
-    );
-    assert!(
-        v6.windows(2).all(|w| w[0].end < w[1].start),
-        "v6 intervals still overlap after resolution"
-    );
-
-    for entry in v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)) {
-        assert!(
-            entry.iter().all(|b| b.is_ascii_uppercase()),
-            "non-ASCII-uppercase code: {entry:?}"
-        );
-    }
+    let v4 = resolve_overlaps(v4);
+    let v6 = resolve_overlaps(v6);
+    assert_sorted_disjoint(&v4);
+    assert_sorted_disjoint(&v6);
+    assert_ccs_ascii_uppercase(&v4, &v6);
 
     let v4_bin = transform_v4(&v4);
-    let v4_path = out_dir.join("v4.bin");
-    fs::write(&v4_path, &v4_bin).expect("writing v4.bin");
-
     let v6_bin = transform_v6(&v6);
+
+    let v4_path = out_dir.join("v4.bin");
     let v6_path = out_dir.join("v6.bin");
+    fs::write(&v4_path, &v4_bin).expect("writing v4.bin");
     fs::write(&v6_path, &v6_bin).expect("writing v6.bin");
 
     let unique_codes: BTreeSet<[u8; 2]> = v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)).collect();
@@ -128,78 +134,101 @@ fn main() {
     );
 }
 
+fn assert_sorted_disjoint<I: Interval>(intervals: &[I]) {
+    assert!(
+        intervals.windows(2).all(|w| w[0].end() < w[1].start()),
+        "intervals still overlap after resolution"
+    );
+}
+
+fn assert_ccs_ascii_uppercase(v4: &[V4Interval], v6: &[V6Interval]) {
+    for entry in v4.iter().map(|e| e.cc).chain(v6.iter().map(|e| e.cc)) {
+        assert!(
+            entry.iter().all(|b| b.is_ascii_uppercase()),
+            "non-ASCII-uppercase code: {entry:?}"
+        );
+    }
+}
+
 fn parse_rir(data_dir: &Path) -> (Vec<V4Interval>, Vec<V6Interval>) {
-    let mut v4: Vec<V4Interval> = Vec::new();
-    let mut v6: Vec<V6Interval> = Vec::new();
-
-    for rir in RIRS {
-        let path = data_dir.join(format!("delegated-{rir}-extended-latest"));
-        let content = fs::read_to_string(&path).unwrap_or_else(|e| panic!("reading {}: {e}", path.display()));
-        for line in content.lines() {
-            if line.is_empty() || line.starts_with('#') {
-                continue;
-            }
-            let parts: Vec<&str> = line.split('|').collect();
-            if parts.len() < 7 {
-                continue;
-            }
-            let cc = parts[1];
-            let ty = parts[2];
-            let start = parts[3];
-            let value = parts[4];
-            let status = parts[6];
-            if cc.len() != 2 || !cc.bytes().all(|b| b.is_ascii_uppercase()) || cc == "ZZ" {
-                continue;
-            }
-            if status != "allocated" && status != "assigned" {
-                continue;
-            }
-            let cc_bytes: [u8; 2] = cc.as_bytes().try_into().unwrap();
-
-            match ty {
-                "ipv4" => {
-                    let Ok(start_ip) = Ipv4Addr::from_str(start) else {
-                        continue;
-                    };
-                    let Ok(count) = value.parse::<u32>() else { continue };
-                    if count == 0 {
-                        continue;
-                    }
-                    let s = u32::from(start_ip);
-                    let e = s.saturating_add(count - 1);
-                    v4.push(V4Interval {
-                        start: s,
-                        end: e,
-                        cc: cc_bytes,
-                    });
-                }
-                "ipv6" => {
-                    let Ok(start_ip) = Ipv6Addr::from_str(start) else {
-                        continue;
-                    };
-                    let Ok(prefix) = value.parse::<u32>() else { continue };
-                    if prefix == 0 || prefix > 128 {
-                        continue;
-                    }
-                    let s = u128::from(start_ip);
-                    let host_bits = 128 - prefix;
-                    let mask = if host_bits == 128 {
-                        u128::MAX
-                    } else {
-                        (1u128 << host_bits) - 1
-                    };
-                    let e = s | mask;
-                    v6.push(V6Interval {
-                        start: s,
-                        end: e,
-                        cc: cc_bytes,
-                    });
-                }
-                _ => {}
-            }
-        }
+    let mut v4 = Vec::new();
+    let mut v6 = Vec::new();
+    for registry in REGISTRIES {
+        let path = data_dir.join(format!("delegated-{registry}-extended-latest"));
+        parse_registry_file(&path, &mut v4, &mut v6);
     }
     (v4, v6)
+}
+
+fn parse_registry_file(path: &Path, v4: &mut Vec<V4Interval>, v6: &mut Vec<V6Interval>) {
+    let content = fs::read_to_string(path).unwrap_or_else(|e| panic!("reading {}: {e}", path.display()));
+    for line in content.lines() {
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let parts: Vec<&str> = line.split('|').collect();
+        if parts.len() < 7 {
+            continue;
+        }
+        let cc = parts[1];
+        let kind = parts[2];
+        let start = parts[3];
+        let value = parts[4];
+        let status = parts[6];
+
+        if cc.len() != 2 || !cc.bytes().all(|b| b.is_ascii_uppercase()) || cc == "ZZ" {
+            continue;
+        }
+        if status != "allocated" && status != "assigned" {
+            continue;
+        }
+        let cc_bytes: [u8; 2] = cc.as_bytes().try_into().unwrap();
+
+        match kind {
+            "ipv4" => {
+                if let Some(interval) = parse_v4_line(start, value, cc_bytes) {
+                    v4.push(interval);
+                }
+            }
+            "ipv6" => {
+                if let Some(interval) = parse_v6_line(start, value, cc_bytes) {
+                    v6.push(interval);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn parse_v4_line(start: &str, value: &str, cc: [u8; 2]) -> Option<V4Interval> {
+    let start_ip = Ipv4Addr::from_str(start).ok()?;
+    let count = value.parse::<u32>().ok()?;
+    if count == 0 {
+        return None;
+    }
+    let s = u32::from(start_ip);
+    let e = s.saturating_add(count - 1);
+    Some(V4Interval { start: s, end: e, cc })
+}
+
+fn parse_v6_line(start: &str, value: &str, cc: [u8; 2]) -> Option<V6Interval> {
+    let start_ip = Ipv6Addr::from_str(start).ok()?;
+    let prefix = value.parse::<u32>().ok()?;
+    if prefix == 0 || prefix > 128 {
+        return None;
+    }
+    let s = u128::from(start_ip);
+    let host_bits = 128 - prefix;
+    let mask = if host_bits == 128 {
+        u128::MAX
+    } else {
+        (1u128 << host_bits) - 1
+    };
+    Some(V6Interval {
+        start: s,
+        end: s | mask,
+        cc,
+    })
 }
 
 fn resolve_overlaps<I: Interval>(mut intervals: Vec<I>) -> Vec<I> {
@@ -225,138 +254,249 @@ fn resolve_overlaps<I: Interval>(mut intervals: Vec<I>) -> Vec<I> {
             out.push(t);
         }
     }
+    out.sort_unstable_by_key(|t| t.start());
     out
 }
 
-fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
-    let mut merged: Vec<V4Interval> = Vec::with_capacity(intervals.len());
-    for entry in intervals {
-        let merge = match merged.last() {
-            Some(last) => last.cc == entry.cc && last.end.checked_add(1) == Some(entry.start),
-            None => false,
-        };
-        if merge {
-            merged.last_mut().unwrap().end = entry.end;
-        } else {
-            merged.push(V4Interval {
-                start: entry.start,
-                end: entry.end,
-                cc: entry.cc,
-            });
-        }
-    }
-
-    let mut cc_set: BTreeSet<[u8; 2]> = BTreeSet::new();
-    for e in &merged {
-        cc_set.insert(e.cc);
-    }
+fn build_cc_dict<I: IntoIterator<Item = [u8; 2]>>(entries: I) -> (Vec<[u8; 2]>, HashMap<[u8; 2], u8>) {
+    let cc_set: BTreeSet<[u8; 2]> = entries.into_iter().collect();
     let cc_dict: Vec<[u8; 2]> = cc_set.into_iter().collect();
-    assert!(cc_dict.len() <= 255, "v4 cc dict overflow: {} codes", cc_dict.len());
-    let cc_to_idx: std::collections::HashMap<[u8; 2], u8> =
-        cc_dict.iter().enumerate().map(|(i, cc)| (*cc, i as u8)).collect();
+    assert!(cc_dict.len() <= 255, "cc dict overflow: {} codes", cc_dict.len());
+    let cc_to_idx: HashMap<[u8; 2], u8> = cc_dict.iter().enumerate().map(|(i, cc)| (*cc, i as u8)).collect();
+    (cc_dict, cc_to_idx)
+}
 
-    const BUCKETS: usize = 65536;
-    let mut bucket_segs: Vec<Vec<(u16, u16, u8)>> = vec![Vec::new(); BUCKETS];
-    for iv in &merged {
-        let first_bucket = iv.start >> 16;
-        let last_bucket = iv.end >> 16;
-        for b in first_bucket..=last_bucket {
-            let bucket_start: u32 = b << 16;
-            let bucket_end: u32 = bucket_start | 0xFFFF;
-            let seg_start = iv.start.max(bucket_start);
-            let seg_end = iv.end.min(bucket_end);
-            bucket_segs[b as usize].push((
-                (seg_start - bucket_start) as u16,
-                (seg_end - bucket_start) as u16,
-                cc_to_idx[&iv.cc],
-            ));
-        }
+fn push_u32(out: &mut Vec<u8>, value: u32) {
+    out.extend_from_slice(&value.to_le_bytes());
+}
+
+fn push_u32s(out: &mut Vec<u8>, values: &[u32]) {
+    for v in values {
+        out.extend_from_slice(&v.to_le_bytes());
     }
-    for segs in &mut bucket_segs {
-        segs.sort_by_key(|s| s.0);
+}
+
+fn push_u16s(out: &mut Vec<u8>, values: &[u16]) {
+    for v in values {
+        out.extend_from_slice(&v.to_le_bytes());
     }
+}
 
-    let mut first_level: Vec<u32> = vec![TAG_EMPTY; BUCKETS];
-    let mut mixed_base: Vec<u32> = Vec::new();
-    let mut mixed_initial: Vec<u8> = Vec::new();
-    let mut transitions: Vec<(u16, u8)> = Vec::new();
+fn push_cc_pairs(out: &mut Vec<u8>, pairs: &[[u8; 2]]) {
+    for cc in pairs {
+        out.extend_from_slice(cc);
+    }
+}
 
-    for (bucket, segs) in bucket_segs.iter().enumerate() {
-        if segs.is_empty() {
+fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
+    let merged = merge_v4_adjacent(intervals);
+    let (cc_dict, cc_to_idx) = build_cc_dict(merged.iter().map(|e| e.cc));
+    let bucket_segments = build_v4_bucket_segments(&merged, &cc_to_idx);
+
+    let mut first_level = vec![TAG_EMPTY; BUCKET_COUNT];
+    let mut mixed_buckets: Vec<MixedBucket> = Vec::new();
+
+    for (bucket, segments) in bucket_segments.iter().enumerate() {
+        if segments.is_empty() {
             continue;
         }
+        let transitions = build_v4_transitions(segments);
 
-        let mut trans: Vec<(u16, u8)> = Vec::new();
-        let mut pos: u32 = 0;
-        for &(off_start, off_end, cc_idx) in segs {
-            if (off_start as u32) > pos {
-                trans.push((pos as u16, V4_CC_GAP));
-            }
-            trans.push((off_start, cc_idx));
-            pos = (off_end as u32) + 1;
-        }
-        if pos <= 65535 {
-            trans.push((pos as u16, V4_CC_GAP));
-        }
-        if trans[0].0 != 0 {
-            trans.insert(0, (0, V4_CC_GAP));
-        }
-        trans.dedup_by_key(|x| x.1);
-
-        if trans.len() == 1 {
-            let (_, cc) = trans[0];
-            first_level[bucket] = if cc == V4_CC_GAP {
+        if transitions.len() == 1 {
+            let cc = transitions[0].1;
+            first_level[bucket] = if cc == UNASSIGNED {
                 TAG_EMPTY
             } else {
                 TAG_PURE | (cc as u32)
             };
         } else {
-            let mixed_idx = mixed_base.len() as u32;
-            first_level[bucket] = TAG_MIXED | mixed_idx;
-            mixed_base.push(transitions.len() as u32);
-            mixed_initial.push(trans[0].1);
-            for &(off, cc) in &trans[1..] {
-                transitions.push((off, cc));
-            }
+            mixed_buckets.push(MixedBucket {
+                bucket,
+                initial_cc: transitions[0].1,
+                transitions: transitions[1..].to_vec(),
+            });
+        }
+    }
+
+    mixed_buckets.sort_by_key(|m| {
+        let is_sparse = m.transitions.len() <= V4_DENSE_THRESHOLD;
+        (is_sparse, m.bucket)
+    });
+
+    let layout = layout_mixed_buckets(&mut first_level, &mixed_buckets);
+    emit_v4(&first_level, &cc_dict, &layout)
+}
+
+fn merge_v4_adjacent(intervals: &[V4Interval]) -> Vec<V4Interval> {
+    let mut merged: Vec<V4Interval> = Vec::with_capacity(intervals.len());
+    for entry in intervals {
+        let can_merge = matches!(
+            merged.last(),
+            Some(last) if last.cc == entry.cc && last.end.checked_add(1) == Some(entry.start)
+        );
+        if can_merge {
+            merged.last_mut().unwrap().end = entry.end;
+        } else {
+            merged.push(*entry);
+        }
+    }
+    merged
+}
+
+fn build_v4_bucket_segments(merged: &[V4Interval], cc_to_idx: &HashMap<[u8; 2], u8>) -> Vec<Vec<(u16, u16, u8)>> {
+    let mut bucket_segments: Vec<Vec<(u16, u16, u8)>> = vec![Vec::new(); BUCKET_COUNT];
+    for interval in merged {
+        let first_bucket = interval.start >> 16;
+        let last_bucket = interval.end >> 16;
+        for bucket in first_bucket..=last_bucket {
+            let bucket_start: u32 = bucket << 16;
+            let bucket_end: u32 = bucket_start | 0xFFFF;
+            let seg_start = interval.start.max(bucket_start);
+            let seg_end = interval.end.min(bucket_end);
+            bucket_segments[bucket as usize].push((
+                (seg_start - bucket_start) as u16,
+                (seg_end - bucket_start) as u16,
+                cc_to_idx[&interval.cc],
+            ));
+        }
+    }
+    for segments in &mut bucket_segments {
+        segments.sort_by_key(|s| s.0);
+    }
+    bucket_segments
+}
+
+fn build_v4_transitions(segments: &[(u16, u16, u8)]) -> Vec<(u16, u8)> {
+    let mut transitions: Vec<(u16, u8)> = Vec::new();
+    let mut position: u32 = 0;
+    for &(seg_start, seg_end, cc_idx) in segments {
+        if seg_start as u32 > position {
+            transitions.push((position as u16, UNASSIGNED));
+        }
+        transitions.push((seg_start, cc_idx));
+        position = seg_end as u32 + 1;
+    }
+    if position <= 0xFFFF {
+        transitions.push((position as u16, UNASSIGNED));
+    }
+    if transitions[0].0 != 0 {
+        transitions.insert(0, (0, UNASSIGNED));
+    }
+    transitions.dedup_by_key(|x| x.1);
+    transitions
+}
+
+fn layout_mixed_buckets(first_level: &mut [u32], mixed_buckets: &[MixedBucket]) -> MixedLayout {
+    let mut mixed_base: Vec<u32> = Vec::with_capacity(mixed_buckets.len() + 1);
+    let mut mixed_initial: Vec<u8> = Vec::with_capacity(mixed_buckets.len());
+    let mut transitions: Vec<(u16, u8)> = Vec::new();
+    let mut deep_v4: Vec<u16> = Vec::new();
+    let mut dense_count: u32 = 0;
+
+    for (mixed_idx, bucket) in mixed_buckets.iter().enumerate() {
+        first_level[bucket.bucket] = TAG_MIXED | mixed_idx as u32;
+        mixed_base.push(transitions.len() as u32);
+        mixed_initial.push(bucket.initial_cc);
+        let range_start = transitions.len();
+        transitions.extend(bucket.transitions.iter().copied());
+        let range_end = transitions.len();
+
+        if range_end - range_start > V4_DENSE_THRESHOLD {
+            assert_eq!(
+                mixed_idx as u32, dense_count,
+                "dense buckets must be contiguous at the start"
+            );
+            dense_count += 1;
+            deep_v4.extend_from_slice(&build_v4_deep_one(&transitions, range_start, range_end));
         }
     }
     mixed_base.push(transitions.len() as u32);
 
+    MixedLayout {
+        mixed_base,
+        mixed_initial,
+        transitions,
+        deep_v4,
+        dense_count,
+    }
+}
+
+fn build_v4_deep_one(transitions: &[(u16, u8)], range_start: usize, range_end: usize) -> [u16; V4_DEEP_TOP4_LEN] {
+    let mut deep = [0u16; V4_DEEP_TOP4_LEN];
+    let mut cursor = range_start;
+    for top_4 in 0u32..16 {
+        let top_4_start = (top_4 << 12) as u16;
+        while cursor < range_end && transitions[cursor].0 < top_4_start {
+            cursor += 1;
+        }
+        deep[top_4 as usize] = (cursor - range_start) as u16;
+    }
+    deep[16] = (range_end - range_start) as u16;
+    deep
+}
+
+fn emit_v4(first_level: &[u32], cc_dict: &[[u8; 2]], layout: &MixedLayout) -> Vec<u8> {
     let mut out = Vec::new();
-    for fl in &first_level {
-        out.extend_from_slice(&fl.to_le_bytes());
+    push_u32s(&mut out, first_level);
+    push_u32(&mut out, cc_dict.len() as u32);
+    push_cc_pairs(&mut out, cc_dict);
+    push_u32(&mut out, layout.mixed_initial.len() as u32);
+    push_u32s(&mut out, &layout.mixed_base);
+    out.extend_from_slice(&layout.mixed_initial);
+    push_u32(&mut out, layout.transitions.len() as u32);
+    for (offset, _) in &layout.transitions {
+        out.extend_from_slice(&offset.to_le_bytes());
     }
-    out.extend_from_slice(&(cc_dict.len() as u32).to_le_bytes());
-    for cc in &cc_dict {
-        out.extend_from_slice(cc);
+    for (_, cc) in &layout.transitions {
+        out.push(*cc);
     }
-    out.extend_from_slice(&(mixed_initial.len() as u32).to_le_bytes());
-    for mb in &mixed_base {
-        out.extend_from_slice(&mb.to_le_bytes());
-    }
-    out.extend_from_slice(&mixed_initial);
-    out.extend_from_slice(&(transitions.len() as u32).to_le_bytes());
-    for &(off, _) in &transitions {
-        out.extend_from_slice(&off.to_le_bytes());
-    }
-    for &(_, cc) in &transitions {
-        out.push(cc);
-    }
+    push_u32(&mut out, layout.dense_count);
+    push_u16s(&mut out, &layout.deep_v4);
     out
 }
 
 fn transform_v6(intervals: &[V6Interval]) -> Vec<u8> {
+    let split = split_v6_at_byte_24_boundary(intervals);
+    let merged = merge_v6_adjacent_within_24(&split);
+    let by_bucket = group_v6_by_bucket(&merged);
+
+    let populated: Vec<u128> = by_bucket.keys().copied().collect();
+    assert!(
+        populated.len() < 256,
+        "v6 populated bucket count {} would collide with UNASSIGNED (0xFF)",
+        populated.len()
+    );
+
+    let bucket_lookup = build_v6_bucket_lookup(&populated);
+    let populated_first = build_v6_populated_first(&populated, &by_bucket);
+    let deep = build_v6_deep_layout(&populated, &by_bucket, &merged);
+
+    let (cc_dict, cc_to_idx) = build_cc_dict(merged.iter().map(|e| e.cc));
+    let (primary, side) = build_v6_records(&merged, &cc_to_idx);
+
+    emit_v6(
+        populated.len(),
+        &bucket_lookup,
+        &populated_first,
+        &deep,
+        &cc_dict,
+        &side,
+        &primary,
+    )
+}
+
+fn split_v6_at_byte_24_boundary(intervals: &[V6Interval]) -> Vec<V6Interval> {
     let mut split: Vec<V6Interval> = Vec::with_capacity(intervals.len());
     for entry in intervals {
         let mut s = entry.start;
         while (s >> 104) != (entry.end >> 104) {
-            let sub_end = ((s >> 104) + 1) << 104;
+            let next_24 = ((s >> 104) + 1) << 104;
             split.push(V6Interval {
                 start: s,
-                end: sub_end - 1,
+                end: next_24 - 1,
                 cc: entry.cc,
             });
-            s = sub_end;
+            s = next_24;
         }
         split.push(V6Interval {
             start: s,
@@ -364,126 +504,231 @@ fn transform_v6(intervals: &[V6Interval]) -> Vec<u8> {
             cc: entry.cc,
         });
     }
+    split
+}
 
+fn merge_v6_adjacent_within_24(split: &[V6Interval]) -> Vec<V6Interval> {
     let mut merged: Vec<V6Interval> = Vec::with_capacity(split.len());
-    for entry in &split {
-        let merge = match merged.last() {
-            Some(last) => {
-                last.cc == entry.cc
-                    && last.end.checked_add(1) == Some(entry.start)
-                    && (last.start >> 104) == (entry.end >> 104)
-            }
-            None => false,
-        };
-        if merge {
+    for entry in split {
+        let can_merge = matches!(
+            merged.last(),
+            Some(last) if last.cc == entry.cc
+                && last.end.checked_add(1) == Some(entry.start)
+                && (last.start >> 104) == (entry.end >> 104)
+        );
+        if can_merge {
             merged.last_mut().unwrap().end = entry.end;
         } else {
-            merged.push(V6Interval {
-                start: entry.start,
-                end: entry.end,
-                cc: entry.cc,
-            });
+            merged.push(*entry);
         }
     }
+    merged
+}
 
+fn group_v6_by_bucket(merged: &[V6Interval]) -> BTreeMap<u128, Vec<usize>> {
     let mut by_bucket: BTreeMap<u128, Vec<usize>> = BTreeMap::new();
-    for (i, e) in merged.iter().enumerate() {
-        by_bucket.entry(e.start >> 112).or_default().push(i);
+    for (i, entry) in merged.iter().enumerate() {
+        by_bucket.entry(entry.start >> 112).or_default().push(i);
     }
+    by_bucket
+}
 
-    let populated: Vec<u128> = by_bucket.keys().copied().collect();
-    assert!(
-        populated.len() < 256,
-        "v6 populated bucket count {} would collide with V6_BUCKET_EMPTY (0xFF)",
-        populated.len()
-    );
-
-    let mut bucket_lookup = vec![V6_BUCKET_EMPTY; V6_BUCKET_COUNT];
-    for (ord_i, b) in populated.iter().enumerate() {
-        bucket_lookup[*b as usize] = ord_i as u8;
+fn build_v6_bucket_lookup(populated: &[u128]) -> Vec<u8> {
+    let mut bucket_lookup = vec![UNASSIGNED; BUCKET_COUNT];
+    for (populated_idx, bucket_prefix) in populated.iter().enumerate() {
+        bucket_lookup[*bucket_prefix as usize] = populated_idx as u8;
     }
+    bucket_lookup
+}
 
+fn build_v6_populated_first(populated: &[u128], by_bucket: &BTreeMap<u128, Vec<usize>>) -> Vec<u32> {
     let mut populated_first: Vec<u32> = Vec::with_capacity(populated.len() + 1);
     let mut running: u32 = 0;
-    for b in &populated {
+    for bucket_prefix in populated {
         populated_first.push(running);
-        running += by_bucket[b].len() as u32;
+        running += by_bucket[bucket_prefix].len() as u32;
     }
     populated_first.push(running);
+    populated_first
+}
 
-    let mut sub_index: Vec<u16> = Vec::with_capacity(populated.len() * V6_SUB_INDEX_LEN);
-    for b in &populated {
-        let entries_in_bucket = &by_bucket[b];
-        let bucket_size = entries_in_bucket.len();
-        assert!(bucket_size <= u16::MAX as usize, "bucket size exceeds u16");
-        let mut local_offsets = [0u16; V6_SUB_INDEX_LEN];
-        let mut local_pos: usize = 0;
-        for sub in 0..256u16 {
-            local_offsets[sub as usize] = local_pos as u16;
-            while local_pos < bucket_size {
-                let global_idx = entries_in_bucket[local_pos];
-                let entry_sub = ((merged[global_idx].start >> 104) & 0xFF) as u16;
-                if entry_sub > sub {
-                    break;
+fn build_v6_deep_layout(
+    populated: &[u128],
+    by_bucket: &BTreeMap<u128, Vec<usize>>,
+    merged: &[V6Interval],
+) -> V6DeepLayout {
+    let mut sub_index: Vec<u16> = Vec::with_capacity(populated.len() * V6_BYTE_INDEX_LEN);
+    let mut dense_keys: Vec<u16> = Vec::new();
+    let mut deep_pairs: Vec<u16> = Vec::new();
+    let mut dense2_keys: Vec<u16> = Vec::new();
+    let mut deep2_pairs: Vec<u16> = Vec::new();
+
+    for (populated_idx, bucket_prefix_16) in populated.iter().enumerate() {
+        let entries = &by_bucket[bucket_prefix_16];
+        assert!(entries.len() <= u16::MAX as usize, "bucket size exceeds u16");
+
+        let local_offsets = build_v6_sub_index(entries, merged);
+        sub_index.extend_from_slice(&local_offsets);
+
+        for byte_24 in 0u16..256 {
+            let sub_start = local_offsets[byte_24 as usize] as usize;
+            let sub_end = local_offsets[(byte_24 + 1) as usize] as usize;
+            if sub_end - sub_start <= V6_DENSE_THRESHOLD {
+                continue;
+            }
+            let dense_idx = dense_keys.len();
+            assert!(populated_idx < 256);
+            dense_keys.push(((populated_idx as u16) << 8) | byte_24);
+
+            let prefix_24 = ((*bucket_prefix_16 << 8) | (byte_24 as u128)) << 104;
+            let deep = build_v6_deep_pairs(entries, merged, sub_start, sub_end, prefix_24, 96);
+            deep_pairs.extend_from_slice(&deep);
+
+            for byte_32 in 0u32..256 {
+                let inner_start = deep[byte_32 as usize * 2] as usize;
+                let inner_end = deep[byte_32 as usize * 2 + 1] as usize;
+                if inner_end - inner_start <= V6_DENSE_THRESHOLD {
+                    continue;
                 }
-                local_pos += 1;
+                assert!(dense_idx < 256);
+                dense2_keys.push(((dense_idx as u16) << 8) | byte_32 as u16);
+
+                let prefix_32 = prefix_24 | ((byte_32 as u128) << 96);
+                let deep2 = build_v6_deep_pairs(
+                    entries,
+                    merged,
+                    sub_start + inner_start,
+                    sub_start + inner_end,
+                    prefix_32,
+                    88,
+                );
+                deep2_pairs.extend_from_slice(&deep2);
             }
         }
-        local_offsets[256] = bucket_size as u16;
-        sub_index.extend_from_slice(&local_offsets);
     }
 
-    let mut cc_set: BTreeSet<[u8; 2]> = BTreeSet::new();
-    for e in &merged {
-        cc_set.insert(e.cc);
-    }
-    let cc_dict: Vec<[u8; 2]> = cc_set.into_iter().collect();
-    assert!(cc_dict.len() <= 255, "v6 cc dict overflow: {} codes", cc_dict.len());
-    let cc_to_idx: std::collections::HashMap<[u8; 2], u8> =
-        cc_dict.iter().enumerate().map(|(i, cc)| (*cc, i as u8)).collect();
+    assert!(
+        dense_keys.windows(2).all(|w| w[0] < w[1]),
+        "dense_keys must be strictly sorted"
+    );
+    assert!(
+        dense2_keys.windows(2).all(|w| w[0] < w[1]),
+        "dense2_keys must be strictly sorted"
+    );
 
+    V6DeepLayout {
+        sub_index,
+        dense_keys,
+        deep_pairs,
+        dense2_keys,
+        deep2_pairs,
+    }
+}
+
+fn build_v6_sub_index(entries: &[usize], merged: &[V6Interval]) -> [u16; V6_BYTE_INDEX_LEN] {
+    let mut local_offsets = [0u16; V6_BYTE_INDEX_LEN];
+    let mut cursor: usize = 0;
+    for byte_24 in 0u16..256 {
+        local_offsets[byte_24 as usize] = cursor as u16;
+        while cursor < entries.len() {
+            let entry_byte_24 = ((merged[entries[cursor]].start >> 104) & 0xFF) as u16;
+            if entry_byte_24 > byte_24 {
+                break;
+            }
+            cursor += 1;
+        }
+    }
+    local_offsets[256] = entries.len() as u16;
+    local_offsets
+}
+
+fn build_v6_deep_pairs(
+    entries: &[usize],
+    merged: &[V6Interval],
+    range_start: usize,
+    range_end: usize,
+    prefix: u128,
+    byte_shift: u32,
+) -> [u16; V6_BYTE_INDEX_LEN * 2] {
+    let mut deep = [0u16; V6_BYTE_INDEX_LEN * 2];
+    let mut lo_cursor = range_start;
+    let mut hi_cursor = range_start;
+    for byte in 0u32..256 {
+        let byte_lo = prefix | ((byte as u128) << byte_shift);
+        let byte_hi = byte_lo | ((1u128 << byte_shift) - 1);
+        while lo_cursor < range_end && merged[entries[lo_cursor]].end < byte_lo {
+            lo_cursor += 1;
+        }
+        while hi_cursor < range_end && merged[entries[hi_cursor]].start <= byte_hi {
+            hi_cursor += 1;
+        }
+        deep[byte as usize * 2] = (lo_cursor - range_start) as u16;
+        deep[byte as usize * 2 + 1] = (hi_cursor - range_start) as u16;
+    }
+    let span = (range_end - range_start) as u16;
+    deep[256 * 2] = span;
+    deep[256 * 2 + 1] = span;
+    deep
+}
+
+fn build_v6_records(merged: &[V6Interval], cc_to_idx: &HashMap<[u8; 2], u8>) -> (Vec<u8>, Vec<u8>) {
     let mut primary: Vec<u8> = Vec::with_capacity(merged.len() * V6_REC_SIZE);
     let mut side: Vec<u8> = Vec::new();
 
-    for e in &merged {
-        let cc_idx = cc_to_idx[&e.cc];
-        let size = e.end - e.start + 1;
-        let is_clean = size.is_power_of_two() && (e.start & (size - 1)) == 0;
+    for entry in merged {
+        let cc_idx = cc_to_idx[&entry.cc];
+        let size = entry.end - entry.start + 1;
+        let is_clean = size.is_power_of_two() && (entry.start & (size - 1)) == 0;
         let prefix_len = if is_clean { 128 - size.trailing_zeros() } else { 0 };
-        let aligned_to_48 = (e.start & ((1u128 << 80) - 1)) == 0;
+        let fits_primary = (24..=48).contains(&prefix_len) && aligned_to_primary(entry.start);
 
-        if (24..=48).contains(&prefix_len) && aligned_to_48 {
-            let offset = ((e.start >> 80) & ((1u128 << 32) - 1)) as u32;
+        if fits_primary {
+            let offset = (entry.start >> 80) as u32;
             primary.extend_from_slice(&offset.to_le_bytes());
             primary.push(prefix_len as u8);
             primary.push(cc_idx);
         } else {
             let side_idx = (side.len() / V6_SIDE_SIZE) as u32;
-            side.extend_from_slice(&e.start.to_le_bytes());
-            side.extend_from_slice(&e.end.to_le_bytes());
+            side.extend_from_slice(&entry.start.to_le_bytes());
+            side.extend_from_slice(&entry.end.to_le_bytes());
             side.push(cc_idx);
             primary.extend_from_slice(&side_idx.to_le_bytes());
             primary.push(V6_IRREGULAR);
             primary.push(0);
         }
     }
+    (primary, side)
+}
 
+fn aligned_to_primary(start: u128) -> bool {
+    (start & ((1u128 << 80) - 1)) == 0
+}
+
+fn emit_v6(
+    populated_count: usize,
+    bucket_lookup: &[u8],
+    populated_first: &[u32],
+    deep: &V6DeepLayout,
+    cc_dict: &[[u8; 2]],
+    side: &[u8],
+    primary: &[u8],
+) -> Vec<u8> {
     let mut out = Vec::new();
-    out.extend_from_slice(&bucket_lookup);
-    out.extend_from_slice(&(populated.len() as u32).to_le_bytes());
-    for fi in &populated_first {
-        out.extend_from_slice(&fi.to_le_bytes());
-    }
-    for si in &sub_index {
-        out.extend_from_slice(&si.to_le_bytes());
-    }
-    out.extend_from_slice(&(cc_dict.len() as u32).to_le_bytes());
-    for cc in &cc_dict {
-        out.extend_from_slice(cc);
-    }
-    out.extend_from_slice(&((side.len() / V6_SIDE_SIZE) as u32).to_le_bytes());
-    out.extend_from_slice(&side);
-    out.extend_from_slice(&((primary.len() / V6_REC_SIZE) as u32).to_le_bytes());
-    out.extend_from_slice(&primary);
+    out.extend_from_slice(bucket_lookup);
+    push_u32(&mut out, populated_count as u32);
+    push_u32s(&mut out, populated_first);
+    push_u16s(&mut out, &deep.sub_index);
+    push_u32(&mut out, deep.dense_keys.len() as u32);
+    push_u16s(&mut out, &deep.dense_keys);
+    push_u16s(&mut out, &deep.deep_pairs);
+    push_u32(&mut out, deep.dense2_keys.len() as u32);
+    push_u16s(&mut out, &deep.dense2_keys);
+    push_u16s(&mut out, &deep.deep2_pairs);
+    push_u32(&mut out, cc_dict.len() as u32);
+    push_cc_pairs(&mut out, cc_dict);
+    push_u32(&mut out, (side.len() / V6_SIDE_SIZE) as u32);
+    out.extend_from_slice(side);
+    push_u32(&mut out, (primary.len() / V6_REC_SIZE) as u32);
+    out.extend_from_slice(primary);
     out
 }
