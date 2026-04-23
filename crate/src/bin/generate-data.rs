@@ -207,7 +207,7 @@ fn parse_v4_line(start: &str, value: &str, cc: [u8; 2]) -> Option<V4Interval> {
         return None;
     }
     let s = u32::from(start_ip);
-    let e = s.saturating_add(count - 1);
+    let e = s.checked_add(count - 1)?;
     Some(V4Interval { start: s, end: e, cc })
 }
 
@@ -219,11 +219,7 @@ fn parse_v6_line(start: &str, value: &str, cc: [u8; 2]) -> Option<V6Interval> {
     }
     let s = u128::from(start_ip);
     let host_bits = 128 - prefix;
-    let mask = if host_bits == 128 {
-        u128::MAX
-    } else {
-        (1u128 << host_bits) - 1
-    };
+    let mask = (1u128 << host_bits) - 1;
     Some(V6Interval {
         start: s,
         end: s | mask,
@@ -318,6 +314,7 @@ fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
         }
     }
 
+    // Dense-first ordering; see layout_mixed_buckets dense-contiguity assertion.
     mixed_buckets.sort_by_key(|m| {
         let is_sparse = m.transitions.len() <= V4_DENSE_THRESHOLD;
         (is_sparse, m.bucket)

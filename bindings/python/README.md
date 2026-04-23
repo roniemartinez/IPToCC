@@ -8,7 +8,7 @@ Python bindings for the [`iptocc`](https://crates.io/crates/iptocc) Rust crate. 
 
 > **Note:** Country codes reflect the country **assigned** by a **Regional Internet Registry (RIR)** to each IP block, not where the block is being used. RIR data agrees with MaxMind for **~95%** of IPv4 addresses and has minimal discrepancies for IPv6 ([Zander, 2012](https://figshare.swinburne.edu.au/articles/report/On_the_accuracy_of_IP_geolocation_based_on_IP_allocation_data/26254751)).
 
-> **Important:** iptocc 3.0 is a complete Rust rewrite. Versions 2.x and earlier were pure Python on top of pandas. The public API stays mostly compatible (see migration notes below), single-lookup latency dropped from ~78 ms to ~35-145 ns, and a batch API was added.
+> **Important:** iptocc 3.0 is a complete Rust rewrite. Versions 2.x and earlier were pure Python on top of pandas. The public API stays mostly compatible (see migration notes below), single-lookup latency dropped from ~78 ms to ~44-141 ns, and a batch API was added.
 
 ## Features
 

@@ -294,6 +294,7 @@ fn lookup_v6(ip: Ipv6Addr) -> Option<&'static str> {
     Some(v6_cc(cc_idx))
 }
 
+// Linear scan: with ~20-30 keys (one cache line) it beats binary search on branch prediction.
 #[inline]
 fn deep_find(index: &DeepIndex, key: u16) -> Option<usize> {
     (0..index.count).find(|&i| read_u16(V6_BIN, index.keys + i * 2) == key)

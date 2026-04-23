@@ -15,7 +15,7 @@ Per-call latency for `country_code(address)`, one well-known IP per RIR plus one
 String input via `country_code(&str)`:
 
 | Case                                        |    IPv4 |    IPv6 |
-|---------------------------------------------| ------: | ------: |
+| ------------------------------------------- | ------: | ------: |
 | AFRINIC `41.0.0.1` / `2001:4200::1`         |  5.7 ns | 39.4 ns |
 | APNIC `1.0.16.1` / `2001:200::1`            |  8.4 ns | 39.0 ns |
 | ARIN `8.8.8.8` / `2001:4860:4860::8888`     |  5.6 ns | 50.8 ns |
