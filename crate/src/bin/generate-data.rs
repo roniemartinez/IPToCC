@@ -6,7 +6,10 @@ use std::ops::{Add, Sub};
 use std::path::Path;
 use std::str::FromStr;
 
-use iptocc::format::{FIRST_LEVEL_COUNT, V4_GAP_SENTINEL, V6_BUCKET_COUNT, V6_BUCKET_EMPTY, V6_SUB_INDEX_LEN};
+use iptocc::format::{
+    TAG_EMPTY, TAG_MIXED, TAG_PURE, V4_CC_GAP, V6_BUCKET_COUNT, V6_BUCKET_EMPTY, V6_IRREGULAR, V6_REC_SIZE,
+    V6_SIDE_SIZE, V6_SUB_INDEX_LEN,
+};
 
 const RIRS: &[&str] = &["afrinic", "apnic", "arin", "lacnic", "ripencc"];
 
@@ -243,46 +246,101 @@ fn transform_v4(intervals: &[V4Interval]) -> Vec<u8> {
         }
     }
 
-    let mut entries: Vec<(u32, [u8; 2])> = Vec::new();
-    if merged.first().is_some_and(|e| e.start > 0) {
-        entries.push((0, V4_GAP_SENTINEL));
+    let mut cc_set: BTreeSet<[u8; 2]> = BTreeSet::new();
+    for e in &merged {
+        cc_set.insert(e.cc);
     }
-    for i in 0..merged.len() {
-        let e = &merged[i];
-        entries.push((e.start, e.cc));
-        if let Some(next) = merged.get(i + 1) {
-            if next.start > e.end + 1 {
-                entries.push((e.end + 1, V4_GAP_SENTINEL));
+    let cc_dict: Vec<[u8; 2]> = cc_set.into_iter().collect();
+    assert!(cc_dict.len() <= 255, "v4 cc dict overflow: {} codes", cc_dict.len());
+    let cc_to_idx: std::collections::HashMap<[u8; 2], u8> =
+        cc_dict.iter().enumerate().map(|(i, cc)| (*cc, i as u8)).collect();
+
+    const BUCKETS: usize = 65536;
+    let mut bucket_segs: Vec<Vec<(u16, u16, u8)>> = vec![Vec::new(); BUCKETS];
+    for iv in &merged {
+        let first_bucket = iv.start >> 16;
+        let last_bucket = iv.end >> 16;
+        for b in first_bucket..=last_bucket {
+            let bucket_start: u32 = b << 16;
+            let bucket_end: u32 = bucket_start | 0xFFFF;
+            let seg_start = iv.start.max(bucket_start);
+            let seg_end = iv.end.min(bucket_end);
+            bucket_segs[b as usize].push((
+                (seg_start - bucket_start) as u16,
+                (seg_end - bucket_start) as u16,
+                cc_to_idx[&iv.cc],
+            ));
+        }
+    }
+    for segs in &mut bucket_segs {
+        segs.sort_by_key(|s| s.0);
+    }
+
+    let mut first_level: Vec<u32> = vec![TAG_EMPTY; BUCKETS];
+    let mut mixed_base: Vec<u32> = Vec::new();
+    let mut mixed_initial: Vec<u8> = Vec::new();
+    let mut transitions: Vec<(u16, u8)> = Vec::new();
+
+    for (bucket, segs) in bucket_segs.iter().enumerate() {
+        if segs.is_empty() {
+            continue;
+        }
+
+        let mut trans: Vec<(u16, u8)> = Vec::new();
+        let mut pos: u32 = 0;
+        for &(off_start, off_end, cc_idx) in segs {
+            if (off_start as u32) > pos {
+                trans.push((pos as u16, V4_CC_GAP));
+            }
+            trans.push((off_start, cc_idx));
+            pos = (off_end as u32) + 1;
+        }
+        if pos <= 65535 {
+            trans.push((pos as u16, V4_CC_GAP));
+        }
+        if trans[0].0 != 0 {
+            trans.insert(0, (0, V4_CC_GAP));
+        }
+        trans.dedup_by_key(|x| x.1);
+
+        if trans.len() == 1 {
+            let (_, cc) = trans[0];
+            first_level[bucket] = if cc == V4_CC_GAP {
+                TAG_EMPTY
+            } else {
+                TAG_PURE | (cc as u32)
+            };
+        } else {
+            let mixed_idx = mixed_base.len() as u32;
+            first_level[bucket] = TAG_MIXED | mixed_idx;
+            mixed_base.push(transitions.len() as u32);
+            mixed_initial.push(trans[0].1);
+            for &(off, cc) in &trans[1..] {
+                transitions.push((off, cc));
             }
         }
     }
-    if let Some(last) = merged.last() {
-        if last.end < u32::MAX {
-            entries.push((last.end + 1, V4_GAP_SENTINEL));
-        }
-    }
+    mixed_base.push(transitions.len() as u32);
 
-    let n = entries.len();
-    let mut first_level: Vec<u32> = Vec::with_capacity(FIRST_LEVEL_COUNT);
-    let mut pos: usize = 0;
-    for bucket in 0..FIRST_LEVEL_COUNT {
-        let bucket_floor: u64 = (bucket as u64) << 16;
-        while pos < n && (entries[pos].0 as u64) < bucket_floor {
-            pos += 1;
-        }
-        first_level.push(pos as u32);
-    }
-    debug_assert_eq!(first_level[FIRST_LEVEL_COUNT - 1] as usize, n);
-
-    let mut out = Vec::with_capacity(FIRST_LEVEL_COUNT * 4 + n * 6);
+    let mut out = Vec::new();
     for fl in &first_level {
         out.extend_from_slice(&fl.to_le_bytes());
     }
-    for (s, _) in &entries {
-        out.extend_from_slice(&s.to_le_bytes());
-    }
-    for (_, cc) in &entries {
+    out.extend_from_slice(&(cc_dict.len() as u32).to_le_bytes());
+    for cc in &cc_dict {
         out.extend_from_slice(cc);
+    }
+    out.extend_from_slice(&(mixed_initial.len() as u32).to_le_bytes());
+    for mb in &mixed_base {
+        out.extend_from_slice(&mb.to_le_bytes());
+    }
+    out.extend_from_slice(&mixed_initial);
+    out.extend_from_slice(&(transitions.len() as u32).to_le_bytes());
+    for &(off, _) in &transitions {
+        out.extend_from_slice(&off.to_le_bytes());
+    }
+    for &(_, cc) in &transitions {
+        out.push(cc);
     }
     out
 }
@@ -375,10 +433,42 @@ fn transform_v6(intervals: &[V6Interval]) -> Vec<u8> {
         sub_index.extend_from_slice(&local_offsets);
     }
 
-    let n = merged.len();
-    let header = V6_BUCKET_COUNT + 4 + (populated.len() + 1) * 4 + sub_index.len() * 2;
-    let body = n * 34;
-    let mut out = Vec::with_capacity(header + body);
+    let mut cc_set: BTreeSet<[u8; 2]> = BTreeSet::new();
+    for e in &merged {
+        cc_set.insert(e.cc);
+    }
+    let cc_dict: Vec<[u8; 2]> = cc_set.into_iter().collect();
+    assert!(cc_dict.len() <= 255, "v6 cc dict overflow: {} codes", cc_dict.len());
+    let cc_to_idx: std::collections::HashMap<[u8; 2], u8> =
+        cc_dict.iter().enumerate().map(|(i, cc)| (*cc, i as u8)).collect();
+
+    let mut primary: Vec<u8> = Vec::with_capacity(merged.len() * V6_REC_SIZE);
+    let mut side: Vec<u8> = Vec::new();
+
+    for e in &merged {
+        let cc_idx = cc_to_idx[&e.cc];
+        let size = e.end - e.start + 1;
+        let is_clean = size.is_power_of_two() && (e.start & (size - 1)) == 0;
+        let prefix_len = if is_clean { 128 - size.trailing_zeros() } else { 0 };
+        let aligned_to_48 = (e.start & ((1u128 << 80) - 1)) == 0;
+
+        if (24..=48).contains(&prefix_len) && aligned_to_48 {
+            let offset = ((e.start >> 80) & ((1u128 << 32) - 1)) as u32;
+            primary.extend_from_slice(&offset.to_le_bytes());
+            primary.push(prefix_len as u8);
+            primary.push(cc_idx);
+        } else {
+            let side_idx = (side.len() / V6_SIDE_SIZE) as u32;
+            side.extend_from_slice(&e.start.to_le_bytes());
+            side.extend_from_slice(&e.end.to_le_bytes());
+            side.push(cc_idx);
+            primary.extend_from_slice(&side_idx.to_le_bytes());
+            primary.push(V6_IRREGULAR);
+            primary.push(0);
+        }
+    }
+
+    let mut out = Vec::new();
     out.extend_from_slice(&bucket_lookup);
     out.extend_from_slice(&(populated.len() as u32).to_le_bytes());
     for fi in &populated_first {
@@ -387,14 +477,13 @@ fn transform_v6(intervals: &[V6Interval]) -> Vec<u8> {
     for si in &sub_index {
         out.extend_from_slice(&si.to_le_bytes());
     }
-    for e in &merged {
-        out.extend_from_slice(&e.start.to_le_bytes());
+    out.extend_from_slice(&(cc_dict.len() as u32).to_le_bytes());
+    for cc in &cc_dict {
+        out.extend_from_slice(cc);
     }
-    for e in &merged {
-        out.extend_from_slice(&e.end.to_le_bytes());
-    }
-    for e in &merged {
-        out.extend_from_slice(&e.cc);
-    }
+    out.extend_from_slice(&((side.len() / V6_SIDE_SIZE) as u32).to_le_bytes());
+    out.extend_from_slice(&side);
+    out.extend_from_slice(&((primary.len() / V6_REC_SIZE) as u32).to_le_bytes());
+    out.extend_from_slice(&primary);
     out
 }
