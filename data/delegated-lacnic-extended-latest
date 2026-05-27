@@ -1,7 +1,7 @@
-2.3|lacnic|20260524|96033|19870101|20260521|-0300
+2.3|lacnic|20260525|96041|19870101|20260525|-0300
 lacnic|*|ipv4|*|20632|summary
-lacnic|*|ipv6|*|59170|summary
-lacnic|*|asn|*|16231|summary
+lacnic|*|ipv6|*|59176|summary
+lacnic|*|asn|*|16233|summary
 lacnic|DO|ipv4|5.183.80.0|1024|20240711|allocated|75934
 lacnic|BR|ipv4|24.152.0.0|1024|20200310|allocated|276392
 lacnic|BR|ipv4|24.152.4.0|1024|20200312|allocated|311598
@@ -207,7 +207,7 @@ lacnic|BR|ipv4|45.6.112.0|1024|20170331|allocated|275840
 lacnic|BR|ipv4|45.6.116.0|512|20170412|allocated|111192
 lacnic|BR|ipv4|45.6.118.0|256|20170412|allocated|111192
 lacnic|BR|ipv4|45.6.119.0|256|20170412|allocated|367551
-lacnic||ipv4|45.6.120.0|1024||reserved|
+lacnic|BR|ipv4|45.6.120.0|1024|20260525|allocated|323344
 lacnic|BR|ipv4|45.6.124.0|1024|20170405|allocated|316730
 lacnic|BR|ipv4|45.6.128.0|1024|20170405|allocated|263672
 lacnic|AR|ipv4|45.6.132.0|1024|20170404|allocated|273851
@@ -12614,7 +12614,7 @@ lacnic|BR|ipv4|186.208.32.0|4096|20100524|allocated|110551
 lacnic|BR|ipv4|186.208.48.0|4096|20100524|assigned|112051
 lacnic|BR|ipv4|186.208.64.0|4096|20100524|allocated|140180
 lacnic|BR|ipv4|186.208.80.0|2048|20120402|allocated|115232
-lacnic||ipv4|186.208.88.0|1024||reserved|
+lacnic|BR|ipv4|186.208.88.0|1024|20260525|allocated|320934
 lacnic||ipv4|186.208.92.0|1024||reserved|
 lacnic|BR|ipv4|186.208.96.0|4096|20100625|allocated|322911
 lacnic|BR|ipv4|186.208.112.0|4096|20100705|allocated|138509
@@ -16280,7 +16280,7 @@ lacnic|AR|ipv4|192.141.176.0|1024|20170810|allocated|31990
 lacnic|AR|ipv4|192.141.180.0|1024|20170810|allocated|97077
 lacnic|BR|ipv4|192.141.184.0|1024|20170814|allocated|292314
 lacnic|BR|ipv4|192.141.188.0|1024|20170818|allocated|263503
-lacnic|BR|ipv4|192.141.192.0|1024|20170814|allocated|239918
+lacnic|BR|ipv4|192.141.192.0|1024|20170814|allocated|376512
 lacnic|BR|ipv4|192.141.196.0|1024|20170814|allocated|129528
 lacnic|BR|ipv4|192.141.200.0|1024|20170815|allocated|276741
 lacnic|BR|ipv4|192.141.204.0|1024|20170814|allocated|259781
@@ -62629,7 +62629,7 @@ lacnic||ipv6|2804:420a::|31||available
 lacnic||ipv6|2804:420c::|32||reserved|
 lacnic||ipv6|2804:420d::|32||available
 lacnic||ipv6|2804:420e::|31||available
-lacnic|BR|ipv6|2804:4210::|32|20170814|allocated|239918
+lacnic|BR|ipv6|2804:4210::|32|20170814|allocated|376512
 lacnic||ipv6|2804:4211::|32||available
 lacnic||ipv6|2804:4212::|31||available
 lacnic|BR|ipv6|2804:4214::|32|20170814|allocated|259781
@@ -79277,8 +79277,14 @@ lacnic||ipv6|2804:9906::|31||available
 lacnic|BR|ipv6|2804:9908::|32|20260521|allocated|366068
 lacnic||ipv6|2804:9909::|32||available
 lacnic||ipv6|2804:990a::|31||available
-lacnic||ipv6|2804:990c::|30||available
-lacnic||ipv6|2804:9910::|28||available
+lacnic|BR|ipv6|2804:990c::|32|20260525|allocated|359215
+lacnic||ipv6|2804:990d::|32||available
+lacnic||ipv6|2804:990e::|31||available
+lacnic|BR|ipv6|2804:9910::|32|20260525|allocated|328226
+lacnic||ipv6|2804:9911::|32||available
+lacnic||ipv6|2804:9912::|31||available
+lacnic||ipv6|2804:9914::|30||available
+lacnic||ipv6|2804:9918::|29||available
 lacnic||ipv6|2804:9920::|27||available
 lacnic||ipv6|2804:9940::|26||available
 lacnic||ipv6|2804:9980::|25||available
@@ -88483,7 +88489,7 @@ lacnic|BR|asn|267471|1|20170814|allocated|279761
 lacnic|BR|asn|267472|1|20170814|allocated|263363
 lacnic|BR|asn|267473|1|20170814|allocated|292314
 lacnic||asn|267474|1||reserved|
-lacnic|BR|asn|267475|1|20170814|allocated|239918
+lacnic|BR|asn|267475|1|20170814|allocated|376512
 lacnic|BR|asn|267476|1|20170814|allocated|259781
 lacnic|BR|asn|267477|1|20170815|allocated|279526
 lacnic|BR|asn|267478|1|20170815|allocated|216788
@@ -96034,4 +96040,6 @@ lacnic|BR|asn|275749|1|20260515|allocated|376342
 lacnic|BR|asn|275750|1|20260518|allocated|355524
 lacnic|BR|asn|275751|1|20260521|allocated|370540
 lacnic|BR|asn|275752|1|20260521|allocated|366068
-lacnic||asn|275753|116||available
+lacnic|BR|asn|275753|1|20260525|allocated|359215
+lacnic|BR|asn|275754|1|20260525|allocated|328226
+lacnic||asn|275755|114||available
