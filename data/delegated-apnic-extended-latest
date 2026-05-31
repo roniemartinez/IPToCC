@@ -25,10 +25,10 @@
 #
 ######################################################################
 #
-2.3|apnic|20260530|184692||20260529|+1000
+2.3|apnic|20260531|184698||20260530|+1000
 apnic|*|asn|*|14551|summary
 apnic|*|ipv4|*|57830|summary
-apnic|*|ipv6|*|112311|summary
+apnic|*|ipv6|*|112317|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
 apnic|CN|ipv4|1.0.1.0|256|20110414|allocated|A92E1062
 apnic|CN|ipv4|1.0.2.0|512|20110414|allocated|A92E1062
@@ -106783,7 +106783,13 @@ apnic||ipv6|2001:df7:1404::|46||available|
 apnic||ipv6|2001:df7:1408::|45||available|
 apnic||ipv6|2001:df7:1410::|44||available|
 apnic||ipv6|2001:df7:1420::|43||available|
-apnic||ipv6|2001:df7:1440::|42||available|
+apnic|KH|ipv6|2001:df7:1440::|48|20260530|assigned|A91E10B0
+apnic||ipv6|2001:df7:1441::|48||available|
+apnic||ipv6|2001:df7:1442::|47||available|
+apnic||ipv6|2001:df7:1444::|46||available|
+apnic||ipv6|2001:df7:1448::|45||available|
+apnic||ipv6|2001:df7:1450::|44||available|
+apnic||ipv6|2001:df7:1460::|43||available|
 apnic|CN|ipv6|2001:df7:1480::|48|20210723|assigned|A91128E3
 apnic||ipv6|2001:df7:1481::|48||available|
 apnic||ipv6|2001:df7:1482::|47||available|
@@ -176425,7 +176431,7 @@ apnic|AU|asn|133332|1|20140204|allocated|A911D3F3
 apnic|AU|asn|133333|1|20140205|allocated|A918EF9E
 apnic|PH|asn|133334|1|20140205|allocated|A91ADE0A
 apnic|ID|asn|133335|30|20140205|allocated|A9186214
-apnic||asn|133365|1||reserved|
+apnic||asn|133365|1||available|
 apnic|NZ|asn|133366|1|20140207|allocated|A91A4D46
 apnic||asn|133367|1||reserved|
 apnic|BD|asn|133368|1|20220615|allocated|A91E3BF2
@@ -181140,7 +181146,7 @@ apnic|PK|asn|141369|1|20201022|allocated|A912C015
 apnic|KH|asn|141370|1|20201022|allocated|A91F0A98
 apnic|MY|asn|141371|1|20201023|allocated|A9183F7F
 apnic|PK|asn|141372|1|20201023|allocated|A91BB6DE
-apnic||asn|141373|1||reserved|
+apnic||asn|141373|1||available|
 apnic|IN|asn|141374|1|20240827|allocated|A91B2421
 apnic|BD|asn|141375|1|20201026|allocated|A91E2868
 apnic|ID|asn|141376|1|20260312|allocated|A9186214
