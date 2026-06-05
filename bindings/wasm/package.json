@@ -61,7 +61,7 @@
   },
   "type": "commonjs",
   "dependencies": {
-    "commander": "14.0.3"
+    "commander": "15.0.0"
   },
   "devDependencies": {
     "mitata": "1.0.34"
