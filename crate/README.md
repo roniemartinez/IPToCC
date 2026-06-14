@@ -34,12 +34,11 @@ cargo add iptocc
 ```rust
 use iptocc::{country_code, country_codes};
 
-assert_eq!(country_code("8.8.8.8"), Some("US"));
-assert_eq!(country_code("2001:4860:4860::8888"), Some("US"));
-assert_eq!(country_code("10.0.0.0"), None);
+country_code("8.8.8.8");                // Some("US")
+country_code("2001:4860:4860::8888");   // Some("US")
+country_code("10.0.0.0");               // None
 
-let codes = country_codes(["8.8.8.8", "1.0.16.1"]);
-assert_eq!(codes, vec![Some("US"), Some("JP")]);
+country_codes(["8.8.8.8", "1.0.16.1"]); // vec![Some("US"), Some("JP")]
 ```
 
 Typed inputs are also accepted and skip the string parsing step:
@@ -48,7 +47,7 @@ Typed inputs are also accepted and skip the string parsing step:
 use std::net::Ipv4Addr;
 use iptocc::country_code;
 
-assert_eq!(country_code(Ipv4Addr::new(8, 8, 8, 8)), Some("US"));
+country_code(Ipv4Addr::new(8, 8, 8, 8)); // Some("US")
 ```
 
 A CLI is installed by `cargo install iptocc`:
