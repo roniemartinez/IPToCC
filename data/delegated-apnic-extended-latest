@@ -25,8 +25,8 @@
 #
 ######################################################################
 #
-2.3|apnic|20260628|188309||20260626|+1000
-apnic|*|asn|*|14586|summary
+2.3|apnic|20260629|188308||20260626|+1000
+apnic|*|asn|*|14585|summary
 apnic|*|ipv4|*|61248|summary
 apnic|*|ipv6|*|112475|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
@@ -173948,7 +173948,7 @@ apnic|NZ|asn|4768|1|19980709|allocated|A9146AD7
 apnic|MY|asn|4769|1|20040517|allocated|A91E9580
 apnic|NZ|asn|4770|1|20010330|allocated|A91683D2
 apnic|NZ|asn|4771|1|19960104|allocated|A91CCCF4
-apnic||asn|4772|1||reserved|
+apnic||asn|4772|1||available|
 apnic|SG|asn|4773|1|20050110|allocated|A91DE7DE
 apnic|JP|asn|4774|1|19960228|allocated|A91A001E
 apnic|PH|asn|4775|1|19960809|allocated|A9146207
@@ -174513,7 +174513,7 @@ apnic|TH|asn|9715|1|19991008|allocated|A911C5B0
 apnic|AU|asn|9716|1|19991012|allocated|A9155AE4
 apnic|AU|asn|9717|1|19991012|allocated|A91CB7AB
 apnic|NZ|asn|9718|1|20050805|allocated|A91C2168
-apnic||asn|9719|1||reserved|
+apnic||asn|9719|1||available|
 apnic|AU|asn|9720|1|19991020|allocated|A915F107
 apnic|CN|asn|9721|1|20060907|allocated|A9162E3D
 apnic|AU|asn|9722|1|20020213|allocated|A9117E4D
@@ -175102,8 +175102,7 @@ apnic|AU|asn|17915|1|20080404|allocated|A91F3859
 apnic|AU|asn|17916|1|20010824|allocated|A91C2CC7
 apnic|IN|asn|17917|1|20010824|allocated|A918EDB2
 apnic|AU|asn|17918|1|20040315|allocated|A918919A
-apnic||asn|17919|1||reserved|
-apnic||asn|17920|1||available|
+apnic||asn|17919|2||available|
 apnic|AU|asn|17921|1|20191004|allocated|A91D9CAE
 apnic|ID|asn|17922|1|20010831|allocated|A91798AD
 apnic|CN|asn|17923|1|20021118|allocated|A914EAE4
@@ -176103,7 +176102,7 @@ apnic|NZ|asn|38037|1|20060530|allocated|A916593B
 apnic|AU|asn|38038|1|20200702|allocated|A911DED4
 apnic|IN|asn|38039|1|20060530|allocated|A915B5D0
 apnic|TH|asn|38040|1|20060530|allocated|A91CF4FE
-apnic||asn|38041|1||reserved|
+apnic||asn|38041|1||available|
 apnic|TW|asn|38042|1|20201020|allocated|A91BDB29
 apnic||asn|38043|1||reserved|
 apnic|MY|asn|38044|1|20060531|allocated|A911A9C2
@@ -176199,7 +176198,7 @@ apnic|KH|asn|38209|1|20060830|allocated|A915BF4F
 apnic|BD|asn|38210|1|20060830|allocated|A91BD9C2
 apnic|ID|asn|38211|1|20060830|allocated|A9197FBC
 apnic|BD|asn|38212|1|20131121|allocated|A91ACBB7
-apnic||asn|38213|1||reserved|
+apnic||asn|38213|1||available|
 apnic|AU|asn|38214|1|20060905|allocated|A91514B1
 apnic|JP|asn|38215|1|20210325|allocated|A91E268B
 apnic|AU|asn|38216|1|20100223|allocated|A91AA6DC
