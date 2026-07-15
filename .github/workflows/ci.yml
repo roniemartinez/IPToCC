@@ -76,7 +76,7 @@ jobs:
       - uses: actions/setup-python@v6.3.0
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: astral-sh/setup-uv@v8.2.0
+      - uses: astral-sh/setup-uv@v8.3.2
       - name: Build and test
         working-directory: bindings/python
         run: |
