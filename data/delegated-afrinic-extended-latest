@@ -1,7 +1,7 @@
-2|afrinic|20260715|19468|00000000|20260715|00000
+2|afrinic|20260716|19473|00000000|20260716|00000
 afrinic|*|asn|*|4350|summary
 afrinic|*|ipv4|*|6016|summary
-afrinic|*|ipv6|*|9102|summary
+afrinic|*|ipv6|*|9107|summary
 afrinic|ZA|asn|1228|1|19910301|allocated|F36B9F4B
 afrinic|ZA|asn|1229|1|19910301|allocated|F36B9F4B
 afrinic|ZA|asn|1230|1|19910301|allocated|F36B9F4B
@@ -3375,7 +3375,7 @@ afrinic|MR|asn|329771|1|20260629|allocated|F3698977
 afrinic|NG|asn|329772|1|20260629|allocated|F367D5E1
 afrinic|KE|asn|329773|1|20260629|allocated|F3652A25
 afrinic|EG|asn|329774|1|20260710|allocated|F3635607
-afrinic|ZZ|asn|329775|1||available|
+afrinic|KE|asn|329775|1|20260715|allocated|F36F7F20
 afrinic|ZZ|asn|329776|1||available|
 afrinic|ZZ|asn|329777|1||available|
 afrinic|ZZ|asn|329778|1||available|
@@ -5469,6 +5469,7 @@ afrinic|SD|ipv4|102.181.128.0|16384|20170616|allocated|F366600B
 afrinic|SD|ipv4|102.181.192.0|8192|20170616|allocated|F366600B
 afrinic|ZA|ipv4|102.182.0.0|65536|20170602|allocated|F3674908
 afrinic|EG|ipv4|102.184.0.0|524288|20170517|allocated|F3625D7B
+afrinic|KE|ipv4|102.201.240.0|1024|20260715|allocated|F36F7F20
 afrinic|KE|ipv4|102.201.248.0|1024|20260707|allocated|F36337E5
 afrinic|AO|ipv4|102.202.0.0|1024|20260706|allocated|F3626C5B
 afrinic|KE|ipv4|102.202.6.0|256|20260629|allocated|F3652A25
@@ -10358,7 +10359,6 @@ afrinic|ZZ|ipv4|102.201.0.0|32768||available|
 afrinic|ZZ|ipv4|102.201.128.0|16384||available|
 afrinic|ZZ|ipv4|102.201.192.0|8192||available|
 afrinic|ZZ|ipv4|102.201.224.0|4096||available|
-afrinic|ZZ|ipv4|102.201.240.0|1024||available|
 afrinic|ZZ|ipv4|102.201.252.0|512||available|
 afrinic|ZZ|ipv4|102.203.20.0|1024||available|
 afrinic|ZZ|ipv4|102.203.24.0|2048||available|
@@ -15498,7 +15498,12 @@ afrinic|ZZ|ipv6|2c0f:4f82::|31||available|
 afrinic|ZZ|ipv6|2c0f:4f84::|30||available|
 afrinic|ZZ|ipv6|2c0f:4f88::|29||available|
 afrinic|ZZ|ipv6|2c0f:4f90::|28||available|
-afrinic|ZZ|ipv6|2c0f:4fa0::|27||available|
+afrinic|KE|ipv6|2c0f:4fa0::|32|20260715|allocated|F36F7F20
+afrinic|ZZ|ipv6|2c0f:4fa1::|32||available|
+afrinic|ZZ|ipv6|2c0f:4fa2::|31||available|
+afrinic|ZZ|ipv6|2c0f:4fa4::|30||available|
+afrinic|ZZ|ipv6|2c0f:4fa8::|29||available|
+afrinic|ZZ|ipv6|2c0f:4fb0::|28||available|
 afrinic|ZA|ipv6|2c0f:4fc0::|32|20241004|allocated|F36791E3
 afrinic|ZZ|ipv6|2c0f:4fc1::|32||available|
 afrinic|ZZ|ipv6|2c0f:4fc2::|31||available|
