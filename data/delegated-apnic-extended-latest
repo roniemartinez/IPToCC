@@ -25,7 +25,7 @@
 #
 ######################################################################
 #
-2.3|apnic|20260718|188545||20260717|+1000
+2.3|apnic|20260719|188545||20260718|+1000
 apnic|*|asn|*|14605|summary
 apnic|*|ipv4|*|61312|summary
 apnic|*|ipv6|*|112628|summary
@@ -180864,7 +180864,7 @@ apnic|NZ|asn|134378|1|20150710|allocated|A91B8F34
 apnic|HK|asn|134379|1|20150710|allocated|A9182A08
 apnic|HK|asn|134380|1|20150710|allocated|A9114B3B
 apnic|PH|asn|134381|1|20150711|allocated|A919E2D2
-apnic||asn|134382|1||reserved|
+apnic|BD|asn|134382|1|20260718|allocated|A9181292
 apnic|BD|asn|134383|1|20180823|allocated|A9183496
 apnic|ZA|asn|134384|1|20150715|allocated|A91919EA
 apnic|AU|asn|134385|1|20150715|allocated|A91919EA
@@ -182534,7 +182534,7 @@ apnic|NZ|asn|137051|1|20171030|allocated|A917B736
 apnic|NZ|asn|137052|1|20171030|allocated|A918FEF3
 apnic|ID|asn|137053|1|20220914|allocated|A916807A
 apnic|PG|asn|137054|1|20241025|allocated|A91186C2
-apnic||asn|137055|1||reserved|
+apnic||asn|137055|1||available|
 apnic|MV|asn|137056|1|20171101|allocated|A913A7CB
 apnic|AU|asn|137057|1|20171101|allocated|A912A273
 apnic|TH|asn|137058|1|20171101|allocated|A915D5E8
