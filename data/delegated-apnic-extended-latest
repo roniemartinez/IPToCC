@@ -25,9 +25,9 @@
 #
 ######################################################################
 #
-2.3|apnic|20260727|188688||20260726|+1000
-apnic|*|asn|*|14608|summary
-apnic|*|ipv4|*|61340|summary
+2.3|apnic|20260728|188693||20260727|+1000
+apnic|*|asn|*|14611|summary
+apnic|*|ipv4|*|61342|summary
 apnic|*|ipv6|*|112740|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
 apnic|CN|ipv4|1.0.1.0|256|20110414|allocated|A92E1062
@@ -9908,7 +9908,7 @@ apnic|MY|ipv4|103.21.44.0|1024|20121003|allocated|A91C4750
 apnic|AU|ipv4|103.21.48.0|1024|20121004|allocated|A91D983B
 apnic|IN|ipv4|103.21.53.0|256|20121004|allocated|A92BF8E9
 apnic|IN|ipv4|103.21.54.0|512|20121004|allocated|A92BF8E9
-apnic|AU|ipv4|103.21.56.0|512|20121004|allocated|A9196CD8
+apnic|SG|ipv4|103.21.56.0|512|20121004|allocated|A919CAB7
 apnic|AE|ipv4|103.21.58.0|512|20121005|allocated|A917748E
 apnic|TW|ipv4|103.21.60.0|1024|20121005|allocated|A929292D
 apnic|ID|ipv4|103.21.64.0|512|20230417|assigned|A929E63A
@@ -21521,7 +21521,7 @@ apnic|PH|ipv4|103.150.220.0|512|20200426|assigned|A91A0432
 apnic|IN|ipv4|103.150.222.0|256|20200427|assigned|A9126AB9
 apnic|ID|ipv4|103.150.223.0|256|20200427|assigned|A9289DA3
 apnic|JP|ipv4|103.150.224.0|512|20200427|allocated|A913898B
-apnic|ID|ipv4|103.150.226.0|512|20200427|allocated|A9246718
+apnic|ID|ipv4|103.150.226.0|512|20200427|allocated|A923649F
 apnic|NZ|ipv4|103.150.228.0|512|20200428|allocated|A91A97FD
 apnic||ipv4|103.150.230.0|512||available|
 apnic|SG|ipv4|103.150.232.0|256|20200428|assigned|A917A2D1
@@ -37242,7 +37242,7 @@ apnic|PH|ipv4|125.253.128.0|1024|20051205|allocated|A913F478
 apnic|HK|ipv4|125.253.132.0|1024|20051205|allocated|A9111F72
 apnic|HK|ipv4|125.253.136.0|1024|20051205|allocated|A9111F72
 apnic|ID|ipv4|125.253.140.0|1024|20051205|allocated|A92DB5FB
-apnic|HK|ipv4|125.253.144.0|4096|20051205|allocated|A9111F72
+apnic|US|ipv4|125.253.144.0|4096|20051205|allocated|A91E4D3D
 apnic|AU|ipv4|125.254.0.0|4096|20051102|allocated|A9117E4D
 apnic|AU|ipv4|125.254.16.0|256|20051102|allocated|A9117E4D
 apnic|AU|ipv4|125.254.17.0|256|20051102|allocated|A9172506
@@ -40621,7 +40621,7 @@ apnic|AU|ipv4|160.187.65.0|256|20240918|allocated|A911CB05
 apnic|IN|ipv4|160.187.66.0|512|20240918|assigned|A9140436
 apnic|IN|ipv4|160.187.68.0|512|20240918|allocated|A92C63E3
 apnic|IN|ipv4|160.187.70.0|256|20240919|allocated|A927FCB3
-apnic|ID|ipv4|160.187.71.0|256|20240920|assigned|A9286342
+apnic||ipv4|160.187.71.0|256||reserved|
 apnic||ipv4|160.187.72.0|512||reserved|
 apnic|VN|ipv4|160.187.74.0|512|20240919|assigned|A9228D4E
 apnic|IN|ipv4|160.187.76.0|512|20240919|allocated|A9281775
@@ -41058,8 +41058,10 @@ apnic|ID|ipv4|160.236.157.0|256|20260724|assigned|A92E6042
 apnic|ID|ipv4|160.236.158.0|256|20260724|assigned|A9290206
 apnic|ID|ipv4|160.236.159.0|256|20260724|assigned|A924CAF2
 apnic|AU|ipv4|160.236.160.0|512|20260726|allocated|A91E2EA6
-apnic||ipv4|160.236.162.0|512||available|
-apnic||ipv4|160.236.164.0|1024||available|
+apnic|CN|ipv4|160.236.162.0|512|20260727|allocated|A92B7E14
+apnic|AU|ipv4|160.236.164.0|256|20260727|allocated|A9168E98
+apnic||ipv4|160.236.165.0|256||available|
+apnic||ipv4|160.236.166.0|512||available|
 apnic||ipv4|160.236.168.0|2048||available|
 apnic||ipv4|160.236.176.0|4096||available|
 apnic||ipv4|160.236.192.0|16384||available|
@@ -131302,7 +131304,7 @@ apnic||ipv6|2401:b842::|31||available|
 apnic||ipv6|2401:b844::|30||available|
 apnic||ipv6|2401:b848::|29||available|
 apnic||ipv6|2401:b850::|28||available|
-apnic|BD|ipv6|2401:b860::|32|20240807|allocated|A9163EB9
+apnic||ipv6|2401:b860::|32||reserved|
 apnic||ipv6|2401:b861::|32||available|
 apnic||ipv6|2401:b862::|31||available|
 apnic||ipv6|2401:b864::|30||available|
@@ -188714,6 +188716,9 @@ apnic|IN|asn|154762|1|20260713|allocated|A919852D
 apnic|IN|asn|154763|1|20260720|allocated|A918EDB2
 apnic|BD|asn|154764|1|20260720|allocated|A91D2B4A
 apnic|ID|asn|154765|1|20260724|allocated|A9186214
-apnic||asn|154766|1196||available|
+apnic|ID|asn|154766|1|20260727|allocated|A9186214
+apnic|IN|asn|154767|1|20260727|allocated|A919A43E
+apnic|PK|asn|154768|1|20260727|allocated|A91930DA
+apnic||asn|154769|1193||available|
 apnic|HK|asn|199073|1|20230329|allocated|A91AB1C2
 apnic|KR|asn|202348|1|20221012|allocated|A9134ACE
