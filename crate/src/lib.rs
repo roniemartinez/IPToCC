@@ -1,10 +1,10 @@
 //! Fast offline IP-to-country lookup using RIR delegated statistics.
 
 use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
-use core::str::FromStr;
 
 #[doc(hidden)]
 pub mod format;
+mod parse;
 
 use format::{
     BUCKET_COUNT, TAG_EMPTY, TAG_MASK, TAG_PURE, UNASSIGNED, V4_DEEP_TOP4_LEN, V6_BYTE_INDEX_LEN, V6_DENSE_THRESHOLD,
@@ -16,6 +16,7 @@ static V6_BIN: &[u8] = include_bytes!("data/v6.bin");
 
 struct V4Layout {
     cc_dict: usize,
+    cc_count: usize,
     mixed_base: usize,
     mixed_initial: usize,
     transition_offsets: usize,
@@ -36,6 +37,7 @@ struct V6Layout {
     deep_32: DeepIndex,
     deep_40: DeepIndex,
     cc_dict: usize,
+    cc_count: usize,
     side: usize,
     primary: usize,
 }
@@ -57,6 +59,7 @@ const V4: V4Layout = {
     let deep_narrow = dense_count_at + 4;
     V4Layout {
         cc_dict,
+        cc_count: cc_dict_count,
         mixed_base,
         mixed_initial,
         transition_offsets,
@@ -93,6 +96,7 @@ const V6: V6Layout = {
         deep_32,
         deep_40,
         cc_dict,
+        cc_count: cc_dict_count,
         side,
         primary,
     }
@@ -118,7 +122,7 @@ impl sealed::Sealed for &str {}
 impl IpAddress for &str {
     #[inline]
     fn lookup(self) -> Option<&'static str> {
-        IpAddr::from_str(self).ok().and_then(IpAddress::lookup)
+        parse::parse_ip(self).and_then(IpAddress::lookup)
     }
 }
 
@@ -184,6 +188,19 @@ where
     T: IpAddress,
 {
     inputs.into_iter().map(IpAddress::lookup).collect()
+}
+
+/// Every country code the embedded data can return. May yield a code twice, since
+/// the IPv4 and IPv6 dictionaries are independent.
+///
+/// Exposed for bindings that pre-build a per-code object cache at load time:
+/// `country_code` only ever returns one of these strings, so such a cache is
+/// guaranteed complete.
+#[doc(hidden)]
+pub fn country_code_set() -> impl Iterator<Item = &'static str> {
+    let v4 = (0..V4.cc_count).map(|i| cc_from_dict(V4_BIN, V4.cc_dict, i as u8));
+    let v6 = (0..V6.cc_count).map(|i| cc_from_dict(V6_BIN, V6.cc_dict, i as u8));
+    v4.chain(v6)
 }
 
 #[inline]
