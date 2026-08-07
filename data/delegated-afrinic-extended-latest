@@ -1,7 +1,7 @@
-2|afrinic|20260805|19546|00000000|20260805|00000
+2|afrinic|20260806|19551|00000000|20260806|00000
 afrinic|*|asn|*|4350|summary
 afrinic|*|ipv4|*|6032|summary
-afrinic|*|ipv6|*|9164|summary
+afrinic|*|ipv6|*|9169|summary
 afrinic|ZA|asn|1228|1|19910301|allocated|F36B9F4B
 afrinic|ZA|asn|1229|1|19910301|allocated|F36B9F4B
 afrinic|ZA|asn|1230|1|19910301|allocated|F36B9F4B
@@ -13691,7 +13691,12 @@ afrinic|ZZ|ipv6|2c0f:1282::|31||available|
 afrinic|ZZ|ipv6|2c0f:1284::|30||available|
 afrinic|ZZ|ipv6|2c0f:1288::|29||available|
 afrinic|ZZ|ipv6|2c0f:1290::|28||available|
-afrinic|ZZ|ipv6|2c0f:12a0::|27||available|
+afrinic|ZA|ipv6|2c0f:12a0::|32|20260805|allocated|F3659A28
+afrinic|ZZ|ipv6|2c0f:12a1::|32||available|
+afrinic|ZZ|ipv6|2c0f:12a2::|31||available|
+afrinic|ZZ|ipv6|2c0f:12a4::|30||available|
+afrinic|ZZ|ipv6|2c0f:12a8::|29||available|
+afrinic|ZZ|ipv6|2c0f:12b0::|28||available|
 afrinic|NG|ipv6|2c0f:12c0::|32|20241018|allocated|F362F370
 afrinic|ZZ|ipv6|2c0f:12c1::|32||available|
 afrinic|ZZ|ipv6|2c0f:12c2::|31||available|
