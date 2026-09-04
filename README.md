@@ -23,7 +23,7 @@ Fast, offline IPv4/IPv6 to ISO 3166-1 alpha-2 country code lookup. One Rust core
 - IPv4 and IPv6 in a single call.
 - Accepts a single address or a batch of addresses.
 - Lookup data embedded in the binary; no runtime file I/O.
-- ~1-13 ns on native Rust (typed input); ~44-141 ns through Python, ~200-300 ns through WASM.
+- ~1-14 ns on native Rust (typed input); ~35-132 ns through Python, ~99-271 ns through WASM.
 - `iptocc` CLI installed via `pip`, `cargo`, or `npm`.
 - Data refreshed nightly from the five Regional Internet Registries.
 
@@ -78,6 +78,13 @@ assert_eq!(codes, vec![Some("US"), Some("JP"), None]);
 ```
 
 ### Node
+
+```javascript
+import { country_code } from "@roniemartinez/iptocc";
+
+country_code("8.8.8.8");                     // "US"
+country_code(["8.8.8.8", "1.0.16.1"]);       // ["US", "JP"]
+```
 
 ```javascript
 const { country_code } = require("@roniemartinez/iptocc");

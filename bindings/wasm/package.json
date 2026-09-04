@@ -9,12 +9,10 @@
   "exports": {
     ".": {
       "types": "./pkg-nodejs/iptocc_wasm.d.ts",
-      "node": {
-        "require": "./pkg-nodejs/iptocc_wasm.js",
-        "import": "./pkg-bundler/iptocc_wasm.js"
-      },
       "deno": "./pkg-deno/iptocc_wasm.js",
       "browser": "./pkg-web/iptocc_wasm.js",
+      "module": "./pkg-bundler/iptocc_wasm.js",
+      "node": "./pkg-nodejs/iptocc_wasm.js",
       "default": "./pkg-bundler/iptocc_wasm.js"
     },
     "./nodejs": "./pkg-nodejs/iptocc_wasm.js",

@@ -25,6 +25,13 @@ npm install @roniemartinez/iptocc
 ## Usage
 
 ```javascript
+import { country_code } from "@roniemartinez/iptocc";
+
+country_code("8.8.8.8");                  // "US"
+country_code(["8.8.8.8", "1.0.16.1"]);    // ["US", "JP"]
+```
+
+```javascript
 const { country_code } = require("@roniemartinez/iptocc");
 
 country_code("8.8.8.8");                  // "US"

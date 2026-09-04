@@ -41,3 +41,13 @@ for (const { name, inputs, expected } of batchCases) {
     assert.deepStrictEqual(country_code(inputs), expected);
   });
 }
+
+test("package entry point via require", () => {
+  const pkg = require("@roniemartinez/iptocc");
+  assert.strictEqual(pkg.country_code("8.8.8.8"), "US");
+});
+
+test("package entry point via import", async () => {
+  const pkg = await import("@roniemartinez/iptocc");
+  assert.strictEqual(pkg.country_code("8.8.8.8"), "US");
+});
