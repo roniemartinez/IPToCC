@@ -19,6 +19,11 @@ const V6 = [
   ["miss_loopback", "::1"],
 ];
 
+for (let i = 0; i < 200000; i++) {
+  for (const [, addr] of V4) country_code(addr);
+  for (const [, addr] of V6) country_code(addr);
+}
+
 group("v4", () => {
   for (const [name, addr] of V4) {
     bench(name, () => country_code(addr));
@@ -28,6 +33,30 @@ group("v4", () => {
 group("v6", () => {
   for (const [name, addr] of V6) {
     bench(name, () => country_code(addr));
+  }
+});
+
+const BATCH_SIZES = [10, 100, 1000, 10000];
+
+const repeat = (cases, n) => {
+  const addrs = [];
+  while (addrs.length < n) {
+    for (const [, addr] of cases) addrs.push(addr);
+  }
+  return addrs.slice(0, n);
+};
+
+group("batch_v4", () => {
+  for (const n of BATCH_SIZES) {
+    const addrs = repeat(V4, n);
+    bench(`n=${n}`, () => country_code(addrs));
+  }
+});
+
+group("batch_v6", () => {
+  for (const n of BATCH_SIZES) {
+    const addrs = repeat(V6, n);
+    bench(`n=${n}`, () => country_code(addrs));
   }
 });
 
