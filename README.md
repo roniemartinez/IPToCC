@@ -80,6 +80,10 @@ assert_eq!(codes, vec![Some("US"), Some("JP"), None]);
 ### Node
 
 ```javascript
+// ESM
+import { country_code } from "@roniemartinez/iptocc";
+
+// CommonJS
 const { country_code } = require("@roniemartinez/iptocc");
 
 country_code("8.8.8.8");                     // "US"
