@@ -25,7 +25,7 @@
 #
 ######################################################################
 #
-2.3|apnic|20260905|189605||20260904|+1000
+2.3|apnic|20260906|189605||20260905|+1000
 apnic|*|asn|*|14708|summary
 apnic|*|ipv4|*|61561|summary
 apnic|*|ipv6|*|113336|summary
@@ -41953,7 +41953,7 @@ apnic||ipv4|163.52.107.0|256||available|
 apnic|CN|ipv4|163.52.108.0|512|20260903|allocated|A91AEEF9
 apnic|AU|ipv4|163.52.110.0|512|20260903|allocated|A9192BA7
 apnic|IN|ipv4|163.52.112.0|512|20260904|allocated|A92B947E
-apnic||ipv4|163.52.114.0|512||available|
+apnic|VN|ipv4|163.52.114.0|512|20260905|assigned|A929A22E
 apnic||ipv4|163.52.116.0|1024||available|
 apnic||ipv4|163.52.120.0|2048||available|
 apnic||ipv4|163.52.128.0|32768||available|
@@ -187025,7 +187025,7 @@ apnic|NP|asn|149801|1|20220427|allocated|A915E2CC
 apnic|PH|asn|149802|1|20220427|allocated|A91A6A74
 apnic|TH|asn|149803|1|20220427|allocated|A9125789
 apnic|HK|asn|149804|1|20220427|allocated|A91D243F
-apnic||asn|149805|1||reserved|
+apnic||asn|149805|1||available|
 apnic|BD|asn|149806|1|20220428|allocated|A91676E2
 apnic|BD|asn|149807|1|20220428|allocated|A91CBE2E
 apnic|CN|asn|149808|1|20220428|allocated|A91BB35C
@@ -187181,7 +187181,7 @@ apnic|BD|asn|150156|1|20220806|allocated|A9154961
 apnic|SG|asn|150157|1|20220808|allocated|A911073A
 apnic|KH|asn|150158|1|20220808|allocated|A91EB9C0
 apnic|MM|asn|150159|1|20220809|allocated|A9185B30
-apnic||asn|150160|1||reserved|
+apnic||asn|150160|1||available|
 apnic|PH|asn|150161|1|20241017|allocated|A912434D
 apnic|AU|asn|150162|1|20220811|allocated|A91B85E7
 apnic|IN|asn|150163|1|20220812|allocated|A9193372
