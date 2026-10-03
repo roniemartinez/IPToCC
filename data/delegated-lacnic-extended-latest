@@ -1,7 +1,7 @@
-2.3|lacnic|20261001|97348|19870101|20261001|-0300
+2.3|lacnic|20261002|97358|19870101|20261002|-0300
 lacnic|*|ipv4|*|20809|summary
-lacnic|*|ipv6|*|60013|summary
-lacnic|*|asn|*|16526|summary
+lacnic|*|ipv6|*|60021|summary
+lacnic|*|asn|*|16528|summary
 lacnic|GT|ipv4|2.152.0.0|1024|20260714|allocated|71316
 lacnic|GT|ipv4|2.152.4.0|512|20260714|allocated|71316
 lacnic|DO|ipv4|2.152.6.0|512|20260824|allocated|75934
@@ -105,7 +105,7 @@ lacnic|AR|ipv4|45.4.164.0|1024|20170223|allocated|271376
 lacnic|CL|ipv4|45.4.168.0|1024|20170317|allocated|272952
 lacnic|BR|ipv4|45.4.176.0|512|20170317|allocated|257314
 lacnic|BR|ipv4|45.4.178.0|256|20170317|allocated|267681
-lacnic|BR|ipv4|45.4.179.0|256|20170317|allocated|257314
+lacnic|BR|ipv4|45.4.179.0|256|20170317|allocated|349638
 lacnic|BR|ipv4|45.4.180.0|1024|20170224|allocated|116359
 lacnic|BR|ipv4|45.4.184.0|1024|20170223|allocated|199454
 lacnic|BR|ipv4|45.4.188.0|1024|20170314|allocated|275239
@@ -2003,7 +2003,7 @@ lacnic|BR|ipv4|45.175.44.0|1024|20190513|allocated|276202
 lacnic|BR|ipv4|45.175.48.0|1024|20190422|allocated|342989
 lacnic|BR|ipv4|45.175.52.0|1024|20190418|allocated|300747
 lacnic|BR|ipv4|45.175.56.0|1024|20190418|allocated|221665
-lacnic|BR|ipv4|45.175.60.0|1024|20190422|allocated|300243
+lacnic|BR|ipv4|45.175.60.0|1024|20190422|allocated|103463
 lacnic|HN|ipv4|45.175.64.0|1024|20190513|allocated|301895
 lacnic|DO|ipv4|45.175.68.0|1024|20190417|allocated|300325
 lacnic|BR|ipv4|45.175.72.0|1024|20190423|allocated|299896
@@ -42545,7 +42545,11 @@ lacnic||ipv6|2803:80a1::|32||reserved|
 lacnic||ipv6|2803:80a2::|31||reserved|
 lacnic||ipv6|2803:80a4::|30||reserved|
 lacnic||ipv6|2803:80a8::|29||reserved|
-lacnic||ipv6|2803:80b0::|28||available
+lacnic|VE|ipv6|2803:80b0::|32|20261002|allocated|376973
+lacnic||ipv6|2803:80b1::|32||reserved|
+lacnic||ipv6|2803:80b2::|31||reserved|
+lacnic||ipv6|2803:80b4::|30||reserved|
+lacnic||ipv6|2803:80b8::|29||reserved|
 lacnic|AR|ipv6|2803:80c0::|32|20160819|allocated|259759
 lacnic||ipv6|2803:80c1::|32||reserved|
 lacnic||ipv6|2803:80c2::|32||reserved|
@@ -50861,7 +50865,11 @@ lacnic||ipv6|2803:ff21::|32||reserved|
 lacnic||ipv6|2803:ff22::|31||reserved|
 lacnic||ipv6|2803:ff24::|30||reserved|
 lacnic||ipv6|2803:ff28::|29||reserved|
-lacnic||ipv6|2803:ff30::|28||available
+lacnic|CO|ipv6|2803:ff30::|32|20261002|allocated|317942
+lacnic||ipv6|2803:ff31::|32||reserved|
+lacnic||ipv6|2803:ff32::|31||reserved|
+lacnic||ipv6|2803:ff34::|30||reserved|
+lacnic||ipv6|2803:ff38::|29||reserved|
 lacnic|SR|ipv6|2803:ff40::|32|20160818|allocated|239009
 lacnic||ipv6|2803:ff41::|32||reserved|
 lacnic||ipv6|2803:ff42::|31||reserved|
@@ -68238,7 +68246,7 @@ lacnic||ipv6|2804:5c0a::|31||available
 lacnic|BR|ipv6|2804:5c0c::|32|20190422|allocated|342989
 lacnic||ipv6|2804:5c0d::|32||available
 lacnic||ipv6|2804:5c0e::|31||available
-lacnic|BR|ipv6|2804:5c10::|32|20190422|allocated|300243
+lacnic||ipv6|2804:5c10::|32||reserved|
 lacnic||ipv6|2804:5c11::|32||available
 lacnic||ipv6|2804:5c12::|31||available
 lacnic|BR|ipv6|2804:5c14::|32|20190423|allocated|282056
@@ -90915,7 +90923,7 @@ lacnic|BR|asn|268881|1|20190418|allocated|301586
 lacnic|BR|asn|268882|1|20190418|allocated|300747
 lacnic|BR|asn|268883|1|20190418|allocated|221665
 lacnic|BR|asn|268884|1|20190422|allocated|342989
-lacnic|BR|asn|268885|1|20190422|allocated|300243
+lacnic||asn|268885|1||reserved|
 lacnic|BR|asn|268886|1|20190423|allocated|282056
 lacnic|BR|asn|268887|1|20190423|allocated|299622
 lacnic|BR|asn|268888|1|20190423|allocated|299896
@@ -97093,7 +97101,9 @@ lacnic|VE|asn|275063|1|20260930|allocated|377981
 lacnic|CL|asn|275064|1|20260930|allocated|378237
 lacnic|CO|asn|275065|1|20260930|allocated|375207
 lacnic|AR|asn|275066|1|20260930|allocated|377024
-lacnic||asn|275067|226||available
+lacnic|CO|asn|275067|1|20261002|allocated|317942
+lacnic|VE|asn|275068|1|20261002|allocated|376973
+lacnic||asn|275069|224||available
 lacnic|BR|asn|275293|1|20260902|allocated|262534
 lacnic|BR|asn|275294|1|20260902|allocated|377277
 lacnic|BR|asn|275295|1|20260902|allocated|376774
