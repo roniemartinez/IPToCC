@@ -25,7 +25,7 @@
 #
 ######################################################################
 #
-2.3|apnic|20261010|190572||20261009|+1000
+2.3|apnic|20261011|190572||20261009|+1000
 apnic|*|asn|*|14793|summary
 apnic|*|ipv4|*|61716|summary
 apnic|*|ipv6|*|114063|summary
@@ -180559,8 +180559,7 @@ apnic||asn|59372|2||available|
 apnic|TH|asn|59374|1|20140612|allocated|A91A46B0
 apnic||asn|59375|3||available|
 apnic|BD|asn|59378|1|20140625|allocated|A91159B7
-apnic||asn|59379|1||reserved|
-apnic||asn|59380|1||available|
+apnic||asn|59379|2||available|
 apnic|AF|asn|59381|1|20140708|allocated|A91DD42F
 apnic|BD|asn|59382|1|20140710|allocated|A9148B6A
 apnic|AU|asn|59383|1|20140725|allocated|A91F7EFC
@@ -184774,7 +184773,7 @@ apnic|AU|asn|137867|1|20180524|allocated|A91A7F4A
 apnic|BD|asn|137868|1|20180524|allocated|A91549E0
 apnic|BD|asn|137869|1|20220919|allocated|A918CE56
 apnic|SG|asn|137870|1|20180525|allocated|A91C53FD
-apnic||asn|137871|1||reserved|
+apnic||asn|137871|1||available|
 apnic|HK|asn|137872|1|20180525|allocated|A9132B4D
 apnic|BD|asn|137873|1|20221121|allocated|A91285E3
 apnic|ID|asn|137874|1|20260805|allocated|A9186214
@@ -186666,7 +186665,7 @@ apnic|PH|asn|141152|1|20200903|allocated|A91C8F68
 apnic|HK|asn|141153|1|20200903|allocated|A91706CE
 apnic|BD|asn|141154|1|20200903|allocated|A912918B
 apnic|BD|asn|141155|1|20200907|allocated|A914ED2B
-apnic||asn|141156|1||reserved|
+apnic||asn|141156|1||available|
 apnic|CN|asn|141157|1|20200907|allocated|A914EAE4
 apnic|MY|asn|141158|1|20200908|allocated|A918054D
 apnic|HK|asn|141159|1|20200908|allocated|A91142F2
@@ -188948,7 +188947,7 @@ apnic|BD|asn|152457|1|20240202|allocated|A91F65C7
 apnic|PH|asn|152458|1|20240203|allocated|A91326B3
 apnic|MM|asn|152459|1|20240203|allocated|A9185B6D
 apnic|NL|asn|152460|1|20240206|allocated|A91FB8C9
-apnic|TH|asn|152461|1|20240205|allocated|A912442A
+apnic|TH|asn|152461|1|20240205|allocated|A9152259
 apnic|BD|asn|152462|1|20240205|allocated|A91C167F
 apnic|TH|asn|152463|1|20240205|allocated|A912598D
 apnic|AU|asn|152464|1|20240207|allocated|A916DAC0
@@ -190598,6 +190597,7 @@ apnic|CN|asn|155000|1|20261009|allocated|A9162E3D
 apnic|AU|asn|155001|1|20261009|allocated|A91DD9AB
 apnic|CN|asn|155002|1|20261009|allocated|A9162E3D
 apnic|ID|asn|155003|2|20261009|allocated|A9186214
-apnic||asn|155005|957||available|
+apnic|BD|asn|155005|1|20261009|allocated|A91DD895
+apnic||asn|155006|956||available|
 apnic|HK|asn|199073|1|20230329|allocated|A91AB1C2
 apnic|KR|asn|202348|1|20221012|allocated|A9134ACE
