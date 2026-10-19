@@ -25,10 +25,10 @@
 #
 ######################################################################
 #
-2.3|apnic|20261018|190752||20261016|+1000
-apnic|*|asn|*|14809|summary
+2.3|apnic|20261019|190759||20261018|+1000
+apnic|*|asn|*|14810|summary
 apnic|*|ipv4|*|61741|summary
-apnic|*|ipv6|*|114202|summary
+apnic|*|ipv6|*|114208|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
 apnic|CN|ipv4|1.0.1.0|256|20110414|allocated|A92E1062
 apnic|CN|ipv4|1.0.2.0|512|20110414|allocated|A92E1062
@@ -114744,7 +114744,13 @@ apnic||ipv6|2001:df7:b804::|46||available|
 apnic||ipv6|2001:df7:b808::|45||available|
 apnic||ipv6|2001:df7:b810::|44||available|
 apnic||ipv6|2001:df7:b820::|43||available|
-apnic||ipv6|2001:df7:b840::|42||available|
+apnic|BD|ipv6|2001:df7:b840::|48|20261018|assigned|A91EC5DE
+apnic||ipv6|2001:df7:b841::|48||available|
+apnic||ipv6|2001:df7:b842::|47||available|
+apnic||ipv6|2001:df7:b844::|46||available|
+apnic||ipv6|2001:df7:b848::|45||available|
+apnic||ipv6|2001:df7:b850::|44||available|
+apnic||ipv6|2001:df7:b860::|43||available|
 apnic|BD|ipv6|2001:df7:b880::|48|20211006|assigned|A91A836A
 apnic||ipv6|2001:df7:b881::|48||available|
 apnic||ipv6|2001:df7:b882::|47||available|
@@ -183985,7 +183991,7 @@ apnic|PH|asn|136227|1|20170123|allocated|A91DFB70
 apnic|AU|asn|136228|1|20170123|allocated|A91A4B34
 apnic|MM|asn|136229|1|20230408|allocated|A913DF8F
 apnic|IN|asn|136230|1|20170123|allocated|A91CBA26
-apnic||asn|136231|1||reserved|
+apnic||asn|136231|1||available|
 apnic|AU|asn|136232|1|20170124|allocated|A91810B4
 apnic|BD|asn|136233|1|20170124|allocated|A919A998
 apnic|MV|asn|136234|1|20170125|allocated|A914EED0
@@ -188184,7 +188190,8 @@ apnic|HK|asn|150113|1|20220707|allocated|A919F9A8
 apnic|BD|asn|150114|1|20220707|allocated|A918EB49
 apnic|AU|asn|150115|1|20220708|allocated|A91E38D6
 apnic|PK|asn|150116|1|20220708|allocated|A9187364
-apnic||asn|150117|2||reserved|
+apnic||asn|150117|1||available|
+apnic||asn|150118|1||reserved|
 apnic|TH|asn|150119|1|20220712|allocated|A912442A
 apnic|SG|asn|150120|1|20220712|allocated|A9154EAF
 apnic|AU|asn|150121|1|20220712|allocated|A91B92DC
