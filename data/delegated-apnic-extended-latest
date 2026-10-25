@@ -25,10 +25,10 @@
 #
 ######################################################################
 #
-2.3|apnic|20261024|190897||20261023|+1000
+2.3|apnic|20261025|190902||20261024|+1000
 apnic|*|asn|*|14828|summary
 apnic|*|ipv4|*|61772|summary
-apnic|*|ipv6|*|114297|summary
+apnic|*|ipv6|*|114302|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
 apnic|CN|ipv4|1.0.1.0|256|20110414|allocated|A92E1062
 apnic|CN|ipv4|1.0.2.0|512|20110414|allocated|A92E1062
@@ -141599,7 +141599,12 @@ apnic||ipv6|2402:7fc2::|31||available|
 apnic||ipv6|2402:7fc4::|30||available|
 apnic||ipv6|2402:7fc8::|29||available|
 apnic||ipv6|2402:7fd0::|28||available|
-apnic||ipv6|2402:7fe0::|27||available|
+apnic|PK|ipv6|2402:7fe0::|32|20261024|allocated|A9194AE2
+apnic||ipv6|2402:7fe1::|32||available|
+apnic||ipv6|2402:7fe2::|31||available|
+apnic||ipv6|2402:7fe4::|30||available|
+apnic||ipv6|2402:7fe8::|29||available|
+apnic||ipv6|2402:7ff0::|28||available|
 apnic|AU|ipv6|2402:8000::|32|20070105|allocated|A9119AE2
 apnic||ipv6|2402:8001::|32||available|
 apnic||ipv6|2402:8002::|31||available|
@@ -184027,7 +184032,7 @@ apnic|AU|asn|136133|1|20161206|allocated|A911DA4A
 apnic|BD|asn|136134|1|20161206|allocated|A91CE533
 apnic|AU|asn|136135|1|20161207|allocated|A91FB2E7
 apnic|AU|asn|136136|1|20161207|allocated|A9152D1E
-apnic||asn|136137|1||reserved|
+apnic||asn|136137|1||available|
 apnic|IN|asn|136138|1|20161207|allocated|A9152A39
 apnic|AU|asn|136139|1|20161208|allocated|A9149C05
 apnic|AU|asn|136140|1|20161208|allocated|A91F7334
