@@ -25,10 +25,10 @@
 #
 ######################################################################
 #
-2.3|apnic|20261122|191595||20261121|+1000
+2.3|apnic|20261123|191601||20261122|+1000
 apnic|*|asn|*|14885|summary
 apnic|*|ipv4|*|61883|summary
-apnic|*|ipv6|*|114827|summary
+apnic|*|ipv6|*|114833|summary
 apnic|AU|ipv4|1.0.0.0|256|20110811|assigned|A91872ED
 apnic|CN|ipv4|1.0.1.0|256|20110414|allocated|A92E1062
 apnic|CN|ipv4|1.0.2.0|512|20110414|allocated|A92E1062
@@ -116124,7 +116124,13 @@ apnic||ipv6|2001:df7:e684::|46||available|
 apnic||ipv6|2001:df7:e688::|45||available|
 apnic||ipv6|2001:df7:e690::|44||available|
 apnic||ipv6|2001:df7:e6a0::|43||available|
-apnic||ipv6|2001:df7:e6c0::|42||available|
+apnic|VN|ipv6|2001:df7:e6c0::|48|20261122|assigned|A927E117
+apnic||ipv6|2001:df7:e6c1::|48||available|
+apnic||ipv6|2001:df7:e6c2::|47||available|
+apnic||ipv6|2001:df7:e6c4::|46||available|
+apnic||ipv6|2001:df7:e6c8::|45||available|
+apnic||ipv6|2001:df7:e6d0::|44||available|
+apnic||ipv6|2001:df7:e6e0::|43||available|
 apnic|ID|ipv6|2001:df7:e700::|48|20190221|assigned|A92A5AEE
 apnic||ipv6|2001:df7:e701::|48||available|
 apnic||ipv6|2001:df7:e702::|47||available|
@@ -182804,7 +182810,7 @@ apnic|US|asn|133052|1|20130819|allocated|A912918A
 apnic|AU|asn|133053|1|20130821|allocated|A91E8D22
 apnic|HK|asn|133054|1|20130821|allocated|A91E9D58
 apnic|IN|asn|133055|1|20130822|allocated|A9196F69
-apnic||asn|133056|1||reserved|
+apnic|VN|asn|133056|1|20261122|allocated|A91A560A
 apnic|AU|asn|133057|1|20240923|allocated|A91A9CD5
 apnic|SG|asn|133058|1|20130826|allocated|A91F67BB
 apnic|KR|asn|133059|1|20130827|allocated|A91AC0BB
@@ -185323,7 +185329,7 @@ apnic|AU|asn|137073|1|20171113|allocated|A912A414
 apnic|PH|asn|137074|1|20171114|allocated|A9164860
 apnic|HK|asn|137075|1|20171113|allocated|A916557B
 apnic|IN|asn|137076|1|20171115|allocated|A912BE9D
-apnic||asn|137077|1||reserved|
+apnic||asn|137077|1||available|
 apnic|BD|asn|137078|1|20211031|allocated|A91E90DD
 apnic|AU|asn|137079|1|20171115|allocated|A91FC77C
 apnic|NP|asn|137080|1|20171115|allocated|A91BDE68
@@ -188325,7 +188331,7 @@ apnic|MY|asn|142631|1|20210810|allocated|A9163B62
 apnic||asn|142632|1||reserved|
 apnic|BD|asn|142633|1|20210811|allocated|A91E7E94
 apnic|BD|asn|142634|1|20241124|allocated|A914E0FE
-apnic||asn|142635|1||reserved|
+apnic||asn|142635|1||available|
 apnic|SG|asn|142636|1|20231109|allocated|A913318E
 apnic|HK|asn|142637|1|20210811|allocated|A913C83A
 apnic|BD|asn|142638|1|20210811|allocated|A9127898
